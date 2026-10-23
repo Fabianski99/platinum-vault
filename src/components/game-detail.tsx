@@ -168,7 +168,7 @@ export function GameDetail({ game, connected }: Props) {
         <Gamepad2 size={32}/><h3>Conecta tu Steam para consultar este juego</h3>
         <p>Los logros de la demostración no representan tu progreso real.</p>
         <a href="/api/auth/steam">Conectar Steam <ArrowUpRight size={16}/></a>
-      </div> : loading ? <div className="game-detail-message"><div className="game-detail-loader"/><h3>Consultando los logros de Steam</h3><p>Obteniendo nombres, insignias y porcentajes globales…</p></div>
+      </div> : loading ? <div className="achievement-skeleton" aria-label="Cargando logros">{Array.from({length:6}).map((_,i)=><div key={i}><span className="achievement-skeleton-icon"/><span className="achievement-skeleton-text"><i/><i/></span><span className="achievement-skeleton-status"/></div>)}</div>
       : error ? <div className="game-detail-message"><LockKeyhole size={28}/><h3>No se pudo cargar la ficha de logros</h3><p>{error}</p><button onClick={()=>window.location.reload()}>Reintentar</button></div>
       : !data?.available ? <div className="game-detail-message"><Gamepad2 size={32}/><h3>Sin logros disponibles</h3><p>{data?.note ?? "Steam no ofrece un catálogo de logros consultable para esta aplicación."}</p></div>
       : <>
@@ -178,6 +178,7 @@ export function GameDetail({ game, connected }: Props) {
             {([["all","Todos"],["unlocked","Obtenidos"],["locked","Pendientes"],["rare","Raros ≤10 %"]] as const).map(([id,label])=>
               <button key={id} className={filter===id?"current":""} onClick={()=>setFilter(id)}>{label}</button>)}
           </div>
+          <button className="hidden-toggle" type="button" aria-pressed={revealHidden} onClick={()=>setRevealHidden((value)=>!value)}>{revealHidden?<EyeOff size={15}/>:<Eye size={15}/>} {revealHidden?"Ocultar detalles ocultos":"Revelar ocultos"}</button>
           <label className="achievement-sort"><Filter size={16}/><select aria-label="Ordenar logros" value={order} onChange={(e)=>setOrder(e.target.value as OrderType)}>
             <option value="default">Orden original</option><option value="rarity">Más raros</option><option value="latest">Más recientes</option><option value="name">Alfabético</option>
           </select></label>
@@ -195,8 +196,8 @@ export function GameDetail({ game, connected }: Props) {
               ) : <Trophy size={23}/>}
             </span>
             <div className="achievement-copy">
-              <h3>{achievement.name}</h3>
-              <p>{achievement.description || (achievement.hidden && !achievement.unlocked ? "Descripción oculta por Steam." : "Sin descripción disponible.")}</p>
+              <h3>{displayName(achievement)}</h3>
+              <p>{displayDescription(achievement)}</p>
               {achievement.unlockTime && <small>Desbloqueado el {formatDate(achievement.unlockTime)}</small>}
             </div>
             <div className="achievement-meta">
@@ -207,6 +208,11 @@ export function GameDetail({ game, connected }: Props) {
           {shown.length === 0 && <div className="achievement-empty">No hay logros que coincidan con esos filtros.</div>}
         </div>
       </>}
+      {connected && data?.available && <section className="guide-foundation">
+        <div><span className="eyebrow">04 / SIGUIENTE ETAPA</span><h2>Preparando tu futura guía</h2>
+          <p>Conocemos tus {pending.length} logros pendientes. Para establecer una ruta válida habrá que verificar cuáles son perdibles y cuáles requieren dificultad, NG+, DLC o multijugador. Estas condiciones no se deducen automáticamente de Steam.</p>
+        </div><span className="guide-foundation-status">REQUISITOS PENDIENTES DE VERIFICACIÓN</span>
+      </section>}
     </section>
     <footer className="game-detail-footer"><Link href="/?seccion=museo"><Trophy size={16}/> Visitar el museo</Link><span>PLATINUM VAULT · ARCHIVO PERSONAL</span></footer>
   </main>;
