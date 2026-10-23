@@ -9,11 +9,15 @@ type Props = {
   variant?: "portrait" | "landscape";
   className?: string;
   loading?: "lazy" | "eager";
+  iconHash?: string;
 };
 
-function sources(id: number, variant: "portrait" | "landscape") {
+function sources(id: number, variant: "portrait" | "landscape", iconHash?: string) {
   const steam = "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/" + id + "/";
   const legacy = "https://cdn.akamai.steamstatic.com/steam/apps/" + id + "/";
+  const icon = iconHash && /^[a-f0-9]{40}$/i.test(iconHash)
+    ? "https://media.steampowered.com/steamcommunity/public/images/apps/" + id + "/" + iconHash + ".jpg"
+    : null;
   return variant === "portrait"
     ? [
         steam + "library_600x900.jpg",
@@ -21,6 +25,7 @@ function sources(id: number, variant: "portrait" | "landscape") {
         steam + "capsule_616x353.jpg",
         legacy + "header.jpg",
         steam + "header.jpg",
+        ...(icon ? [icon] : []),
       ]
     : [
         steam + "library_hero.jpg",
@@ -28,13 +33,15 @@ function sources(id: number, variant: "portrait" | "landscape") {
         steam + "header.jpg",
         legacy + "header.jpg",
         steam + "capsule_616x353.jpg",
+        ...(icon ? [icon] : []),
       ];
 }
 
-export function GameArtwork({ id, name, variant = "portrait", className = "", loading = "lazy" }: Props) {
+export function GameArtwork({ id, name, variant = "portrait", className = "", loading = "lazy", iconHash }: Props) {
   const [failure, setFailure] = useState({ id, variant, index: 0 });
   const position = failure.id === id && failure.variant === variant ? failure.index : 0;
-  const options = sources(id, variant);
+  const options = sources(id, variant, iconHash);
+  const isIcon = Boolean(iconHash && options[position]?.includes("/steamcommunity/public/images/apps/"));
   return <div className={"game-artwork " + (variant === "landscape" ? "game-artwork-landscape " : "") + className}>
     {position < options.length ? (
       // Steam sirve las imágenes desde su propia CDN; el fallback se maneja en el navegador.
@@ -45,7 +52,7 @@ export function GameArtwork({ id, name, variant = "portrait", className = "", lo
         alt={name}
         loading={loading}
         onError={() => setFailure({ id, variant, index: position + 1 })}
-        className={position >= 2 ? "game-artwork-wide" : undefined}
+        className={isIcon ? "game-artwork-small-icon" : position >= 2 ? "game-artwork-wide" : undefined}
       />
     ) : <div className="game-artwork-fallback">
       <div className="game-artwork-glow"/>
