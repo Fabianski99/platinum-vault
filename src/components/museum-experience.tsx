@@ -146,17 +146,38 @@ export function MuseumExperience({ games, onOpen, ownerKey }: Props) {
       {highlights.length>1&&<div className="spotlight-arrows"><button onClick={previous} aria-label="Pieza anterior"><ArrowLeft size={20}/></button><span>{String((spotlight%highlights.length)+1).padStart(2,"0")} / {String(highlights.length).padStart(2,"0")}</span><button onClick={next} aria-label="Pieza siguiente"><ArrowRight size={20}/></button></div>}
     </div>}
 
-    <div className="museum-collection-header">
+    {games.length > 0 && <section className="museum-special-rooms">
+      <div className="museum-rooms-title"><span className="eyebrow">EXPOSICIONES / SELECCIÓN CURADA</span><h2>Más allá del 100 %</h2><p>Distintas maneras de contar la historia de tu colección.</p></div>
+      <div className="museum-room-grid">
+        <button onClick={()=>jumpToCollection("cronologia")}>
+          <CalendarDays size={23}/><span>SALA 01</span><strong>Por año</strong><small>Recorre tus conquistas en orden cronológico.</small><ArrowUpRight size={19}/>
+        </button>
+        <button onClick={()=>jumpToCollection("sagas")}>
+          <Layers3 size={23}/><span>SALA 02</span><strong>Universos y sagas</strong><small>Encuentra franquicias con varias entregas completadas.</small><ArrowUpRight size={19}/>
+        </button>
+        <button onClick={()=>jumpToCollection("sala","hours")}>
+          <Clock3 size={23}/><span>SALA 03</span><strong>Las más largas</strong><small>Las obras en las que más horas has invertido.</small><ArrowUpRight size={19}/>
+        </button>
+      </div>
+      <div className="museum-honors">
+        {topHours && <button onClick={()=>onOpen(topHours)}><Medal size={18}/><div><small>MAYOR TIEMPO REGISTRADO</small><strong>{topHours.name}</strong><span>{hours(topHours.playtime)} horas jugadas</span></div><ArrowUpRight size={18}/></button>}
+        {topAchievements && <button onClick={()=>onOpen(topAchievements)}><Trophy size={18}/><div><small>MÁS LOGROS EN UN JUEGO</small><strong>{topAchievements.name}</strong><span>{topAchievements.total} logros</span></div><ArrowUpRight size={18}/></button>}
+        {latestCompleted && <button onClick={()=>onOpen(latestCompleted)}><BookOpen size={18}/><div><small>ÚLTIMO LOGRO FINAL REGISTRADO</small><strong>{latestCompleted.name}</strong><span>{completionDate(latestCompleted.completedAt)}</span></div><ArrowUpRight size={18}/></button>}
+      </div>
+    </section>}
+
+    <div className="museum-collection-header" id="coleccion-museo">
       <div><span className="eyebrow">01 / RECORRER LA COLECCIÓN</span><h2>Las obras de tu historia</h2></div>
-      <div className="museum-view-switch"><button className={view==="sala"?"current":""} onClick={()=>setView("sala")}><GalleryHorizontal size={17}/> Galería</button><button className={view==="cronologia"?"current":""} onClick={()=>setView("cronologia")}><CalendarDays size={17}/> Cronología</button></div>
+      <div className="museum-view-switch"><button className={view==="sala"?"current":""} onClick={()=>setView("sala")}><GalleryHorizontal size={17}/> Galería</button><button className={view==="cronologia"?"current":""} onClick={()=>setView("cronologia")}><CalendarDays size={17}/> Cronología</button><button className={view==="sagas"?"current":""} onClick={()=>setView("sagas")}><Layers3 size={17}/> Sagas</button></div>
     </div>
 
     <div className="museum-controls">
       <label className="museum-search"><Search size={18}/><input value={query} onChange={(e)=>setQuery(e.target.value)} placeholder="Buscar en el museo…"/></label>
       <label className="museum-only-favorite"><input type="checkbox" checked={onlyFavorites} onChange={(e)=>setOnlyFavorites(e.target.checked)}/><Heart size={16}/> Solo favoritas</label>
+      <label className="museum-year-select">Año <select aria-label="Filtrar por año" value={yearFilter} onChange={(e)=>setYearFilter(e.target.value)}><option value="todos">Todos los años</option>{yearOptions.map((year)=><option key={year} value={year}>{year}</option>)}</select></label>
       <label className="museum-sort">Ordenar por <select aria-label="Ordenar colección" value={sort} onChange={(e)=>setSort(e.target.value as Sort)}><option value="newest">Última finalización</option><option value="oldest">Primera finalización</option><option value="name">Nombre</option><option value="hours">Más horas</option></select></label>
     </div>
-    <div className="museum-works-number">{ordered.length} OBRAS EN EXPOSICIÓN <span>{view==="sala"?"SALA DE EXPOSICIONES":"LÍNEA DEL TIEMPO"}</span></div>
+    <div className="museum-works-number">{ordered.length} OBRAS EN EXPOSICIÓN <span>{view==="sala"?"SALA DE EXPOSICIONES":view==="cronologia"?"LÍNEA DEL TIEMPO":"SAGAS Y UNIVERSOS"}</span></div>
 
     {games.length===0 ? <div className="museum-empty-new"><Trophy size={48}/><h3>El museo espera su primera conquista.</h3><p>Los juegos verificados al 100 % aparecerán aquí a medida que Steam complete la sincronización.</p></div>
     : ordered.length===0 ? <div className="museum-empty-new"><Search size={32}/><h3>No hay piezas que coincidan.</h3><p>Prueba otra búsqueda o desactiva «Solo favoritas».</p></div>
@@ -172,6 +193,13 @@ export function MuseumExperience({ games, onOpen, ownerKey }: Props) {
         <div className="museum-artwork-date">{game.completedAt?"Último logro · "+completionDate(game.completedAt):"Fecha no disponible"}</div>
       </motion.article>)}
     </div>
+    : view==="sagas" ? <div className="museum-saga-groups">{sagaGroups.map(([name,items])=>
+      <section className="museum-saga-group" key={name}>
+        <div className="museum-saga-heading"><div><span className="eyebrow">UNIVERSO DEL MUSEO</span><h3>{name}</h3></div><span>{items.length} {items.length===1?"obra":"obras"} al 100 %</span></div>
+        <div className="museum-saga-items">{items.map((game)=><button key={game.id} onClick={()=>onOpen(game)} className="museum-saga-item">
+          <GameArtwork id={game.id} name={game.name} iconHash={game.iconHash}/><span>{game.name}</span><small>{game.total} logros</small>
+        </button>)}</div>
+      </section>)}</div>
     : <div className="museum-timeline">{timeline.map(([year,items])=><div key={year} className="museum-year">
       <div className="museum-year-heading"><strong>{year}</strong><span>{items.length} {items.length===1?"obra":"obras"}</span></div>
       <div className="museum-year-entries">{items.map((game)=><article className="museum-year-piece" key={game.id}>
