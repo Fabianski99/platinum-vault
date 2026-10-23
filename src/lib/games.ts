@@ -5,6 +5,7 @@ export type Game = {
   unlocked: number | null;
   total: number | null;
   status?: "ready" | "unavailable" | "error";
+  iconHash?: string;
   completedAt?: number;
   lastPlayed?: number;
   genre?: string;
