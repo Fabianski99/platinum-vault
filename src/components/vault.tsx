@@ -93,6 +93,9 @@ export function Vault({ initialGames, player, isSteam, loadFailed }: { initialGa
             nextOffset: number | null;
           };
           if (!Array.isArray(data.results)) throw new Error("Respuesta de Steam inválida.");
+          if (data.results.length > 0 && data.results.every((game) => game.status === "error")) {
+            throw new Error("Steam no está respondiendo a las consultas de logros. Prueba de nuevo más tarde.");
+          }
 
           for (const snapshot of data.results) {
             if (initialGames.some((game) => game.id === snapshot.id)) {
