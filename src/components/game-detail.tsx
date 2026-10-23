@@ -187,7 +187,7 @@ export function GameDetail({ game, connected, returnSection = "biblioteca" }: Pr
           {shown.map((achievement: AchievementDetail, i) => <motion.article className={"achievement " + (achievement.unlocked?"obtained":"locked")} key={achievement.apiName}
             initial={{opacity:0,y:8}} animate={{opacity:1,y:0}} transition={{delay:Math.min(i*.012,.32)}}>
             <span className="achievement-image">
-              {achievement.unlocked && achievement.icon ? (
+              {achievement.hidden && !achievement.unlocked && !revealHidden ? <LockKeyhole size={24}/> : achievement.unlocked && achievement.icon ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={achievement.icon} alt=""/>
               ) : !achievement.unlocked && (achievement.lockedIcon || achievement.icon) ? (
