@@ -33,14 +33,20 @@ function franchiseFor(name: string) {
 }
 
 export function MuseumExperience({ games, onOpen, ownerKey }: Props) {
-  const [view, setView] = useState<View>("sala");
-  const [sort, setSort] = useState<Sort>("newest");
-  const [query, setQuery] = useState("");
-  const [onlyFavorites, setOnlyFavorites] = useState(false);
-  const [yearFilter, setYearFilter] = useState("todos");
+  const preferencesKey = "platinum-vault:museo:vistas:" + ownerKey;
+  const initialPrefs = () => { try { return typeof window === "undefined" ? {} : JSON.parse(localStorage.getItem(preferencesKey) || "{}") as { view?: View; sort?: Sort; query?: string; onlyFavorites?: boolean; yearFilter?: string }; } catch { return {}; } };
+  const [view, setView] = useState<View>(() => initialPrefs().view ?? "sala");
+  const [sort, setSort] = useState<Sort>(() => initialPrefs().sort ?? "newest");
+  const [query, setQuery] = useState(() => initialPrefs().query ?? "");
+  const [onlyFavorites, setOnlyFavorites] = useState(() => initialPrefs().onlyFavorites ?? false);
+  const [yearFilter, setYearFilter] = useState(() => initialPrefs().yearFilter ?? "todos");
   const [favorites, setFavorites] = useState<number[]>([]);
   const [spotlight, setSpotlight] = useState(0);
   const storageKey = "platinum-vault:museo:favoritos:" + ownerKey;
+
+  useEffect(() => {
+    try { localStorage.setItem(preferencesKey, JSON.stringify({ view, sort, query, onlyFavorites, yearFilter })); } catch {}
+  }, [preferencesKey, view, sort, query, onlyFavorites, yearFilter]);
 
   useEffect(() => {
     try {
