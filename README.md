@@ -15,9 +15,9 @@ Plataforma para reunir la biblioteca de Steam y exhibir los juegos completados a
 
 El sitio tiene tres vistas: inicio, biblioteca y museo. Sin una sesión válida utiliza una colección **ficticia de demostración**, claramente identificada. No corresponde a una cuenta real.
 
-Con una sesión de Steam, obtiene la biblioteca visible y permite consultar los logros por grupos de ocho juegos desde la biblioteca. La colección del museo se forma únicamente con juegos cuyo total de logros se haya podido comprobar.
+Con una sesión de Steam, obtiene la biblioteca visible y consulta automáticamente los logros por grupos de ocho juegos, con concurrencia limitada y barra de progreso. La biblioteca puede ordenarse por última actividad, orden alfabético, horas jugadas o progreso. La colección del museo se forma únicamente con juegos cuyo total de logros se haya podido comprobar. Puedes pausar la consulta o repetirla si algún juego no se actualizó.
 
-**Limitaciones actuales:** la sincronización de logros todavía es manual y no se guarda entre recargas; no hay base de datos activa, estadísticas históricas persistentes, guías ni recomendador. La fecha del último logro se usa como aproximación de la finalización del 100 %, no como certificación histórica del platino.
+**Limitaciones actuales:** la sincronización de logros no se guarda todavía en Supabase; se conserva temporalmente en este navegador durante 12 horas; no hay base de datos activa, estadísticas históricas persistentes, guías ni recomendador. La fecha del último logro se usa como aproximación de la finalización del 100 %, no como certificación histórica del platino.
 
 ## Configuración local
 
