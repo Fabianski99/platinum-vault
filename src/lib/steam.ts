@@ -1,7 +1,7 @@
 import "server-only";
 import type { Game, Player } from "@/lib/games";
 
-type OwnedGame = { appid: number; name?: string; playtime_forever?: number; rtime_last_played?: number };
+type OwnedGame = { appid: number; name?: string; playtime_forever?: number; rtime_last_played?: number; img_icon_url?: string };
 
 async function steamFetch<T>(path: string, params: Record<string, string>): Promise<T> {
   const key = process.env.STEAM_API_KEY;
@@ -31,6 +31,7 @@ export async function getOwnedGames(steamId: string): Promise<Game[]> {
     .map((game) => ({
       id: game.appid,
       name: game.name!,
+      iconHash: game.img_icon_url,
       playtime: (game.playtime_forever ?? 0) / 60,
       unlocked: null,
       total: null,
