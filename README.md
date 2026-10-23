@@ -1,47 +1,72 @@
 # Platinum Vault
 
-Plataforma personal conectada a Steam para explorar una biblioteca, consultar sus logros y exhibir juegos completados al 100 % como un museo interactivo.
+Una biblioteca de Steam y un museo personal de juegos completados al 100 %, con identidad visual editorial y recorridos interactivos.
 
 ## Tecnologías
 
-Next.js 16 (App Router), React, TypeScript, Tailwind CSS 4, CSS, Motion, Lucide y Steam Web API. La integración de Supabase/PostgreSQL se reserva para una fase posterior.
+- Next.js 16, React 19 y TypeScript.
+- Tailwind CSS 4, estilos propios y Motion.
+- Lucide para iconografía.
+- Steam OpenID y Steam Web API.
+- Supabase/PostgreSQL **reservados para una etapa futura**.
 
-## Funcionamiento
+## Funciones actuales
 
-- Inicio de sesión mediante Steam OpenID 2.0.
-- Biblioteca real de Steam con horas jugadas, búsqueda, ordenamiento y progreso.
-- Sincronización progresiva de logros por lotes, con pausa, avance y almacenamiento temporal en el navegador.
-- Arte del juego con varias rutas de la CDN de Steam. Si falta la portada, intenta otros formatos y el icono del juego; si no hay arte oficial, utiliza una cubierta de reemplazo.
-- **Ficha individual** en `/juegos/APPID`: progreso, insignias, nombres, descripciones, desbloqueados/pendientes, fechas y rareza global cuando Steam la proporciona.
-- **Museo interactivo**: exposición destacada con navegación, galería, cronología, búsqueda, orden y selección de obras favoritas.
-- Las favoritas del museo se guardan únicamente en este navegador, separadas por SteamID.
+### Biblioteca y conexión
 
-Las fechas de finalización corresponden al **último logro registrado** cuando está disponible; Steam no siempre permite reconstruir la primera vez que un juego se completó al 100 %.
+- Inicio de sesión con Steam, horas jugadas, biblioteca real y progreso de logros.
+- Sincronización automática por lotes, pausa y reintento.
+- Búsqueda, estado de logros y clasificación por actividad, nombre, horas y progreso.
+- Búsqueda, filtros y orden de la biblioteca guardados localmente.
+- Regreso a la sección de origen y restauración aproximada del desplazamiento al cerrar una ficha.
 
-## Configuración local
+### Sistema de imágenes
 
-1. Instala las dependencias con `npm install`.
-2. Copia `.env.example` a `.env.local`.
-3. Configura `NEXT_PUBLIC_APP_URL=http://localhost:3000`, tu `STEAM_API_KEY` y un `STEAM_SESSION_SECRET` aleatorio de al menos 32 caracteres.
-4. Ejecuta `npm run dev` y abre `http://localhost:3000`.
+1. Intento de portada vertical oficial en las rutas habituales de Steam.
+2. Si solo hay arte horizontal, se construye una composición con fondo difuminado y nombre legible. **Nunca se estira un icono pequeño hasta convertirlo en portada**.
+3. Si fallan las rutas directas, se consultan metadatos públicos de la tienda mediante \`/api/artwork/[appId]\`.
+4. Si no se encuentra arte oficial, se muestra una cubierta tipográfica coherente con el museo. El icono de Steam, si existe, se utiliza solo como elemento pequeño de la cubierta.
 
-Nunca subas `.env.local` ni expongas las claves. La cuenta de Steam debe permitir acceder a los detalles de los juegos para que funcione la biblioteca.
+Algunas aplicaciones o juegos retirados carecen de ilustraciones públicas. No se muestran imágenes de otros productos como si fueran del juego original.
 
-## Comprobaciones
+### Ficha individual (\`/juegos/APPID\`)
 
-```bash
+- Logros reales, iconos, fechas, rareza global y descripciones cuando Steam los permite.
+- Búsqueda y filtros por desbloqueado, pendiente y rareza global.
+- Botón para revelar logros ocultos (inicialmente protegidos).
+- Últimas conquistas y objetivos pendientes ordenados por popularidad global, **no por dificultad**.
+- Estadísticas de logros raros y ocultos; estados de carga con esqueletos.
+- Panel preparatorio de guías: no inventa perdibles, dificultad, NG+, multijugador ni DLC.
+
+### Museo
+
+- Exposición principal con selección de favoritas.
+- Galería, cronología por año y agrupación por sagas conocidas. Las sagas con una sola obra se conservan en «Otras obras» para no aparentar una colección completa.
+- Salas de exploración por año, saga y horas invertidas.
+- Reconocimientos fundamentados en horas jugadas, número de logros y último logro final conocido.
+- Búsqueda, filtro por año, favoritas, orden y vista recordados en este navegador.
+
+**Nota sobre las fechas:** la fecha presentada es la del último logro que Steam registra, no necesariamente la fecha de la primera vez que el jugador alcanzó el 100 %. Steam no proporciona una puntuación universal de dificultad del 100 %.
+
+## Desarrollo local
+
+1. Ejecuta \`npm install\`.
+2. Copia \`.env.example\` a \`.env.local\`.
+3. Configura \`NEXT_PUBLIC_APP_URL=http://localhost:3000\`, \`STEAM_API_KEY\` y \`STEAM_SESSION_SECRET\` (secreto aleatorio de 32 caracteres como mínimo).
+4. Ejecuta \`npm run dev\`.
+
+Comprueba antes de continuar:
+
+\`\`\`bash
 npm run lint
 npm run build
-```
+\`\`\`
 
-## Limitaciones conocidas
+Las claves de Steam permanecen en el servidor. No subas \`.env.local\` ni secretos a GitHub.
 
-- Algunas aplicaciones, herramientas y juegos de Steam no disponen de arte o logros públicos. No se inventa información para rellenar esas ausencias.
-- La consulta de logros y sus porcentajes depende de Steam y de la privacidad del perfil. Las llamadas pueden fallar o ser limitadas.
-- Las fichas de la demostración no muestran logros ficticios: para obtener los logros auténticos hay que iniciar sesión.
-- Todavía no hay base de datos persistente, perfiles públicos ni guías personalizadas. Tampoco se ha desplegado a Vercel.
-- Las imágenes de Steam pueden cambiar o desaparecer de sus servidores.
+## Pendiente
 
-## Próximas etapas
-
-Validar en la cuenta real las fichas y la colección, introducir Supabase para persistencia y preparar el despliegue. Después se desarrollará el motor de guías personalizadas.
+- Validar visualmente la galería, los fallback y los logros con la biblioteca real.
+- Integrar persistencia en Supabase más adelante (por ahora se usa el almacenamiento del navegador).
+- Preparar publicación en Vercel cuando la experiencia local esté estable.
+- Añadir fuentes contrastadas de requisitos para las guías personalizadas; existe un contrato inicial en \`src/lib/guide-schema.ts\`, sin guías generadas todavía.
