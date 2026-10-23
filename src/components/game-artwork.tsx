@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Gamepad2, ImageOff } from "lucide-react";
 
 type Props = {
@@ -32,10 +32,9 @@ function sources(id: number, variant: "portrait" | "landscape") {
 }
 
 export function GameArtwork({ id, name, variant = "portrait", className = "", loading = "lazy" }: Props) {
-  const [position, setPosition] = useState(0);
+  const [failure, setFailure] = useState({ id, variant, index: 0 });
+  const position = failure.id === id && failure.variant === variant ? failure.index : 0;
   const options = sources(id, variant);
-
-  useEffect(() => setPosition(0), [id, variant]);
   return <div className={"game-artwork " + (variant === "landscape" ? "game-artwork-landscape " : "") + className}>
     {position < options.length ? (
       // Steam sirve las imágenes desde su propia CDN; el fallback se maneja en el navegador.
@@ -45,7 +44,7 @@ export function GameArtwork({ id, name, variant = "portrait", className = "", lo
         src={options[position]}
         alt={name}
         loading={loading}
-        onError={() => setPosition((current) => current + 1)}
+        onError={() => setFailure({ id, variant, index: position + 1 })}
         className={position >= 2 ? "game-artwork-wide" : undefined}
       />
     ) : <div className="game-artwork-fallback">
