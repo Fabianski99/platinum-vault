@@ -74,7 +74,7 @@ export function MuseumExperience({ games, onOpen, ownerKey }: Props) {
     {featured && <div className="museum-spotlight">
       <AnimatePresence mode="wait">
         <motion.div key={featured.id} className="spotlight-background" initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}} transition={{duration:.35}}>
-          <GameArtwork id={featured.id} name={featured.name} variant="landscape"/>
+          <GameArtwork id={featured.id} name={featured.name} iconHash={featured.iconHash} variant="landscape"/>
         </motion.div>
       </AnimatePresence>
       <div className="spotlight-overlay"/>
@@ -111,7 +111,7 @@ export function MuseumExperience({ games, onOpen, ownerKey }: Props) {
     : view==="sala" ? <div className="museum-gallery-new">
       {ordered.map((game,i)=><motion.article layout key={game.id} className="museum-artwork-item" initial={{opacity:0,y:22}} animate={{opacity:1,y:0}} transition={{delay:Math.min(i*.035,.35)}}>
         <div className="museum-artwork-frame">
-          <button className="museum-artwork-open" onClick={()=>onOpen(game)} aria-label={"Abrir ficha de "+game.name}><GameArtwork id={game.id} name={game.name}/><span className="museum-onhover">EXPLORAR OBRA <ArrowUpRight size={17}/></span></button>
+          <button className="museum-artwork-open" onClick={()=>onOpen(game)} aria-label={"Abrir ficha de "+game.name}><GameArtwork id={game.id} name={game.name} iconHash={game.iconHash}/><span className="museum-onhover">EXPLORAR OBRA <ArrowUpRight size={17}/></span></button>
           <button className={"museum-artwork-favorite "+(favorites.includes(game.id)?"hearted":"")} onClick={()=>toggleFavorite(game.id)} aria-label={favorites.includes(game.id)?"Quitar de favoritas":"Marcar favorita"}><Heart size={16} fill={favorites.includes(game.id)?"currentColor":"none"}/></button>
         </div>
         <div className="museum-artwork-index">PIEZA Nº {String(i+1).padStart(3,"0")} <span><Trophy size={12}/> 100 %</span></div>
@@ -123,7 +123,7 @@ export function MuseumExperience({ games, onOpen, ownerKey }: Props) {
     : <div className="museum-timeline">{timeline.map(([year,items])=><div key={year} className="museum-year">
       <div className="museum-year-heading"><strong>{year}</strong><span>{items.length} {items.length===1?"obra":"obras"}</span></div>
       <div className="museum-year-entries">{items.map((game)=><article className="museum-year-piece" key={game.id}>
-        <button onClick={()=>onOpen(game)} className="museum-year-image"><GameArtwork id={game.id} name={game.name}/></button>
+        <button onClick={()=>onOpen(game)} className="museum-year-image"><GameArtwork id={game.id} name={game.name} iconHash={game.iconHash}/></button>
         <div><span className="eyebrow">{game.completedAt?completionDate(game.completedAt):"FECHA NO DISPONIBLE"}</span><h3>{game.name}</h3><p>{game.total} logros · {hours(game.playtime)} horas</p><button onClick={()=>onOpen(game)}>Ver ficha completa <ArrowUpRight size={15}/></button></div>
         <button onClick={()=>toggleFavorite(game.id)} className={"museum-heart "+(favorites.includes(game.id)?"hearted":"")} aria-label={favorites.includes(game.id)?"Quitar de favoritas":"Marcar favorita"}><Heart size={17} fill={favorites.includes(game.id)?"currentColor":"none"}/></button>
       </article>)}</div>
