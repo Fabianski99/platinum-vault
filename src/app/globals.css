@@ -16,7 +16,7 @@ footer{border-top:1px solid #33392f;padding:45px 6%;display:flex;justify-content
 .sync-copy{display:flex;align-items:flex-start;gap:15px;flex:1;min-width:0}
 .sync-copy>div:last-child{flex:1}
 .sync-copy strong{display:block;color:#eae6d9;font-size:13px;font-weight:700;margin-bottom:7px}
-.sync-copy span:not(.sync-progress span){display:block;color:#aab1a7;font-size:11px;line-height:1.5}
+.sync-copy>div>span{display:block;color:#aab1a7;font-size:11px;line-height:1.5}
 .sync-indicator{display:flex;justify-content:center;align-items:center;width:37px;height:37px;flex-shrink:0;border:1px solid #575b4d;border-radius:50%;color:var(--gold)}
 .sync-indicator.loading svg{animation:pv-spin 2.6s linear infinite}
 @keyframes pv-spin{to{transform:rotate(360deg)}}
