@@ -18,11 +18,9 @@ export default async function GamePage({ params }: { params: Promise<{ appId: st
     return <GameDetail game={example} connected={false}/>;
   }
 
+  let games;
   try {
-    const games = await getOwnedGames(steamId);
-    const game = games.find((entry) => entry.id === id);
-    if (!game) notFound();
-    return <GameDetail game={game} connected={true}/>;
+    games = await getOwnedGames(steamId);
   } catch {
     return <main className="detail-error-page">
       <h1>No se pudo cargar la biblioteca de Steam</h1>
@@ -30,4 +28,7 @@ export default async function GamePage({ params }: { params: Promise<{ appId: st
       <Link href="/?seccion=biblioteca">Volver a la biblioteca</Link>
     </main>;
   }
+  const game = games.find((entry) => entry.id === id);
+  if (!game) notFound();
+  return <GameDetail game={game} connected={true}/>;
 }
