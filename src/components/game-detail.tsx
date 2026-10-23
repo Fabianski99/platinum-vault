@@ -127,8 +127,40 @@ export function GameDetail({ game, connected }: Props) {
         </div>
       </div>
 
+      {connected && loading && <div className="game-insight-skeleton" aria-label="Cargando estadísticas">
+        {Array.from({ length: 3 }).map((_,i)=><div key={i} className="insight-loading-card"><div/><span/><span/></div>)}
+      </div>}
+      {data?.available && <section className="game-insights">
+        <div className="game-insight-label"><span className="eyebrow">02 / TU PROGRESO</span><h2>Detrás de cada logro</h2></div>
+        <div className="game-insight-stats">
+          <div><Target size={20}/><strong>{pending.length}</strong><span>Objetivos pendientes</span></div>
+          <div><Sparkles size={20}/><strong>{rareCount}</strong><span>Logros raros (10 % global o menos)</span></div>
+          <div><Eye size={20}/><strong>{hiddenCount}</strong><span>Logros señalados como ocultos</span></div>
+        </div>
+        <div className="game-curations">
+          <div className="game-curation">
+            <div className="game-curation-heading"><Clock3 size={19}/><h3>Últimas conquistas</h3></div>
+            {latestUnlocked.length ? latestUnlocked.map((item) =>
+              <div className="curation-row" key={item.apiName}>
+                <span className="curation-check"><Check size={16}/></span>
+                <div><strong>{displayName(item)}</strong><small>{formatDate(item.unlockTime)}</small></div>
+              </div>) : <p>Todavía no hay fechas de desbloqueo disponibles.</p>}
+          </div>
+          <div className="game-curation">
+            <div className="game-curation-heading"><Target size={19}/><h3>Objetivos por explorar</h3></div>
+            {commonPending.length ? commonPending.map((item) =>
+              <div className="curation-row" key={item.apiName}>
+                <span className="curation-target"><Target size={16}/></span>
+                <div><strong>{displayName(item)}</strong><small>{item.globalPercent?.toFixed(1)} % de jugadores lo obtuvieron</small></div>
+              </div>) : <p>{pending.length ? "Steam no facilita suficientes porcentajes globales." : "Has conseguido todos los logros de este juego."}</p>}
+            <small className="curation-explanation">Ordenados por popularidad global, no por dificultad ni tiempo estimado.</small>
+          </div>
+        </div>
+        {rarest && <p className="game-rarest">Tu logro obtenido más raro: <strong>{rarest.name}</strong> · {rarest.globalPercent?.toFixed(1)} % global.</p>}
+      </section>}
+
       <div className="game-detail-heading">
-        <div><span className="eyebrow">02 / EL CATÁLOGO DE LOGROS</span><h2>El recorrido completo</h2></div>
+        <div><span className="eyebrow">03 / EL CATÁLOGO DE LOGROS</span><h2>El recorrido completo</h2></div>
         <p>Insignias conseguidas, objetivos pendientes y su frecuencia entre los jugadores de Steam.</p>
       </div>
 
