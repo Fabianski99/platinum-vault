@@ -265,3 +265,97 @@ footer{border-top:1px solid #33392f;padding:45px 6%;display:flex;justify-content
 .feature .game-artwork-caption{padding-inline:22px}
 .game-detail-landscape .game-artwork-composed{padding-bottom:0}
 @media(prefers-reduced-motion:reduce){.game-artwork-skeleton{animation:none}}
+
+/* Nuevas salas y distinciones del museo */
+.museum-special-rooms{margin:35px 6% 10px;padding-top:24px;border-top:1px solid #555848}
+.museum-rooms-title h2{font:400 clamp(29px,3.4vw,51px) Georgia,serif;letter-spacing:-.04em;margin:12px 0}
+.museum-rooms-title p{font-size:13px;color:#afb5a9;line-height:1.7}
+.museum-room-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:27px}
+.museum-room-grid>button{position:relative;text-align:left;display:flex;flex-direction:column;align-items:flex-start;gap:13px;min-height:210px;padding:25px 24px;border:1px solid #635c47;background:linear-gradient(140deg,#2e322a,#1a201b);color:#eae0cf;transition:transform .25s,border-color .25s}
+.museum-room-grid>button:hover{transform:translateY(-4px);border-color:#d2b982}
+.museum-room-grid>button>svg:first-child{color:#d5bb85}
+.museum-room-grid>button>svg:last-child{position:absolute;right:20px;top:20px;color:#c0a470}
+.museum-room-grid>button>span{font-size:9px;letter-spacing:.22em;color:#bea77e}
+.museum-room-grid>button>strong{font:400 25px Georgia,serif}
+.museum-room-grid>button>small{font-size:12px;color:#b1b6a8;line-height:1.5}
+.museum-honors{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:18px}
+.museum-honors>button{display:flex;align-items:flex-start;gap:12px;text-align:left;padding:15px;background:#151b17;color:#d8c9a9;border:1px solid #444d42;min-width:0}
+.museum-honors>button:hover{border-color:#a99468}
+.museum-honors>button>svg{color:#c3aa79;flex-shrink:0}
+.museum-honors>button>div{flex:1;min-width:0;display:flex;flex-direction:column;gap:7px}
+.museum-honors small{font-size:9px;letter-spacing:.12em;color:#a0a99d}
+.museum-honors strong{font:400 17px/1.25 Georgia,serif;color:#ede5d6}
+.museum-honors span{font-size:11px;color:#c3b38e}
+.museum-year-select{display:flex;align-items:center;gap:10px;padding:11px 13px;border:1px solid #4a5146;font-size:11px;color:#aeb3a7}
+.museum-year-select select{background:#1b211d;color:#e2d6bd;border:0;font-size:12px;max-width:145px}
+.museum-saga-groups{margin:30px 6% 95px;display:flex;flex-direction:column;gap:55px}
+.museum-saga-heading{display:flex;justify-content:space-between;align-items:end;gap:20px;border-bottom:1px solid #6b674f;padding-bottom:18px;margin-bottom:20px}
+.museum-saga-heading h3{font:400 clamp(28px,3.3vw,48px) Georgia,serif;margin:13px 0 0;color:#f1e9dd}
+.museum-saga-heading>span{color:#bea77c;font-size:11px}
+.museum-saga-items{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:18px}
+.museum-saga-item{display:flex;flex-direction:column;gap:10px;align-items:start;text-align:left;background:none;border:0;color:#e7dfd1;min-width:0;padding:0}
+.museum-saga-item>.game-artwork{width:100%;aspect-ratio:2/3;height:auto;border:6px solid #292f28;outline:1px solid #6c604b}
+.museum-saga-item:hover>.game-artwork{outline-color:#d5bb85;transform:translateY(-4px)}
+.museum-saga-item>span{font:400 17px/1.3 Georgia,serif;overflow-wrap:anywhere}
+.museum-saga-item>small{font-size:10px;color:#c7b28c}
+#coleccion-museo{scroll-margin-top:30px}
+
+/* Estadísticas editoriales y objetivos de las fichas */
+.game-insights{margin:0 0 78px;padding-top:16px}
+.game-insight-label h2{font:400 clamp(29px,3.2vw,48px) Georgia,serif;margin:15px 0 26px}
+.game-insight-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.game-insight-stats>div{display:flex;align-items:center;flex-wrap:wrap;gap:12px;padding:22px 19px;border:1px solid #53594b;background:#21271f}
+.game-insight-stats svg{color:#cdb584}
+.game-insight-stats strong{font:400 36px Georgia,serif;color:#f5e9d2}
+.game-insight-stats span{font-size:11px;color:#b3bdaf}
+.game-curations{margin-top:20px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.game-curation{background:#171e18;border:1px solid #495244;padding:25px}
+.game-curation-heading{display:flex;align-items:center;gap:11px;border-bottom:1px solid #495144;padding-bottom:17px;margin-bottom:6px;color:var(--gold)}
+.game-curation-heading h3{font:400 27px Georgia,serif;color:#ebe3d3;margin:0}
+.curation-row{display:flex;align-items:center;gap:13px;border-bottom:1px solid #363f36;padding:13px 0}
+.curation-check,.curation-target{color:#d6bf8d;border:1px solid #665c49;width:33px;height:33px;display:grid;place-items:center;flex-shrink:0}
+.curation-row>div{display:flex;flex-direction:column;gap:5px;min-width:0}
+.curation-row strong{font:400 17px/1.25 Georgia,serif;color:#f0e8d9}
+.curation-row small,.curation-explanation{font-size:11px;color:#aeb5aa;line-height:1.5}
+.game-curation>p{color:#b2b9af;font-size:12px;line-height:1.65}
+.curation-explanation{display:block;margin-top:16px;color:#d5bd85}
+.game-rarest{color:#cab689;padding:17px 20px;border-left:2px solid #c6a86c;background:#262920;font-size:12px;line-height:1.7;margin-top:18px}
+.hidden-toggle{display:flex;align-items:center;gap:8px;border:1px solid #555e4f;background:#20251e;color:#d8ceb6;padding:12px;font-size:11px;cursor:pointer}
+.hidden-toggle:hover{border-color:#c7af80}
+.guide-foundation{display:flex;justify-content:space-between;align-items:center;gap:30px;padding:30px;margin-top:55px;border:1px solid #615942;background:radial-gradient(circle at 90% 50%,#343324,#20271f 75%)}
+.guide-foundation h2{font:400 28px Georgia,serif;margin:13px 0}
+.guide-foundation p{color:#bfc1b4;max-width:720px;font-size:12px;line-height:1.8}
+.guide-foundation-status{color:#d3bd89;letter-spacing:.1em;font-size:10px;max-width:180px;flex-shrink:0;line-height:1.6}
+.game-insight-skeleton{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-bottom:70px}
+.insight-loading-card{padding:25px;background:#1d241e;border:1px solid #424b40;min-height:130px;display:flex;flex-direction:column;gap:12px}
+.insight-loading-card>div,.insight-loading-card>span,.achievement-skeleton-icon,.achievement-skeleton-text i,.achievement-skeleton-status{background:linear-gradient(105deg,#30382e 15%,#455041 42%,#30382e 70%);background-size:260% 100%;animation:pv-art-loading 2s ease infinite}
+.insight-loading-card>div{height:25px;width:25px}
+.insight-loading-card>span{height:13px;width:70%}
+.insight-loading-card>span:last-child{width:45%}
+.achievement-skeleton>div{display:flex;gap:20px;align-items:center;background:#1b211c;border:1px solid #3d493d;padding:17px;margin-bottom:8px}
+.achievement-skeleton-icon{width:68px;height:68px;flex-shrink:0}
+.achievement-skeleton-text{display:flex;flex-direction:column;flex:1;gap:12px}
+.achievement-skeleton-text i{display:block;width:60%;height:16px}
+.achievement-skeleton-text i:last-child{height:11px;width:40%}
+.achievement-skeleton-status{width:90px;height:15px}
+.progress-checking{height:3px;position:relative;overflow:hidden}
+.progress-checking::before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent,#c6a86b88,transparent);animation:pv-art-loading 2s linear infinite;background-size:260% 100%}
+@media(max-width:1050px){
+ .museum-room-grid,.museum-honors{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .museum-saga-items{grid-template-columns:repeat(4,minmax(0,1fr))}
+}
+@media(max-width:720px){
+ .museum-special-rooms{margin:30px 5% 0}
+ .museum-room-grid,.museum-honors{grid-template-columns:1fr}
+ .museum-room-grid>button{min-height:170px}
+ .museum-saga-groups{margin:25px 5% 75px}
+ .museum-saga-items{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+ .museum-saga-heading{align-items:start;flex-direction:column}
+ .museum-view-switch{flex-wrap:wrap}
+ .game-insight-stats{grid-template-columns:1fr}
+ .game-curations{grid-template-columns:1fr}
+ .game-insight-skeleton{grid-template-columns:1fr}
+ .guide-foundation{flex-direction:column;align-items:start;padding:22px}
+ .achievement-skeleton-status{display:none}
+}
+@media(prefers-reduced-motion:reduce){.insight-loading-card>div,.insight-loading-card>span,.achievement-skeleton-icon,.achievement-skeleton-text i,.achievement-skeleton-status,.progress-checking::before{animation:none}}
