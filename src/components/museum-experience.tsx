@@ -2,19 +2,42 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { ArrowLeft, ArrowRight, ArrowUpRight, CalendarDays, GalleryHorizontal, Heart, Search, Trophy } from "lucide-react";
+import { ArrowLeft, ArrowRight, ArrowUpRight, CalendarDays, GalleryHorizontal, Heart, Search, Trophy, BookOpen, Clock3, Medal, Layers3 } from "lucide-react";
 import { completionDate, hours, type Game } from "@/lib/games";
 import { GameArtwork } from "@/components/game-artwork";
 
-type View = "sala" | "cronologia";
+type View = "sala" | "cronologia" | "sagas";
 type Sort = "newest" | "oldest" | "name" | "hours";
 type Props = { games: Game[]; onOpen: (game: Game) => void; ownerKey: string };
+
+const franchises: { name: string; matcher: RegExp }[] = [
+  { name: "Assassin’s Creed", matcher: /assassin.s creed/i },
+  { name: "Batman: Arkham", matcher: /batman.*arkham|arkham (asylum|city|origins|knight)/i },
+  { name: "Dark Souls", matcher: /dark souls/i },
+  { name: "God of War", matcher: /god of war/i },
+  { name: "Far Cry", matcher: /far cry/i },
+  { name: "Resident Evil", matcher: /resident evil/i },
+  { name: "Tomb Raider", matcher: /tomb raider/i },
+  { name: "Metro", matcher: /^metro[: ]/i },
+  { name: "Watch Dogs", matcher: /watch.?dogs/i },
+  { name: "Spider-Man", matcher: /spider.man/i },
+  { name: "Horizon", matcher: /^horizon /i },
+  { name: "Uncharted", matcher: /uncharted/i },
+  { name: "Portal", matcher: /^portal( |$)/i },
+  { name: "The Witcher", matcher: /witcher/i },
+  { name: "Borderlands", matcher: /borderlands/i },
+  { name: "Yakuza", matcher: /yakuza|like a dragon/i },
+];
+function franchiseFor(name: string) {
+  return franchises.find((franchise) => franchise.matcher.test(name))?.name ?? "Otras obras";
+}
 
 export function MuseumExperience({ games, onOpen, ownerKey }: Props) {
   const [view, setView] = useState<View>("sala");
   const [sort, setSort] = useState<Sort>("newest");
   const [query, setQuery] = useState("");
   const [onlyFavorites, setOnlyFavorites] = useState(false);
+  const [yearFilter, setYearFilter] = useState("todos");
   const [favorites, setFavorites] = useState<number[]>([]);
   const [spotlight, setSpotlight] = useState(0);
   const storageKey = "platinum-vault:museo:favoritos:" + ownerKey;
@@ -29,23 +52,50 @@ export function MuseumExperience({ games, onOpen, ownerKey }: Props) {
   }, [storageKey]);
 
   const toggleFavorite = (id: number) => {
-    setFavorites((current) => {
-      const next = current.includes(id) ? current.filter((item)=>item!==id) : [...current,id];
-      try { localStorage.setItem(storageKey,JSON.stringify(next)); } catch {}
-      return next;
-    });
+    const next = favorites.includes(id) ? favorites.filter((item)=>item!==id) : [...favorites,id];
+    setFavorites(next);
+    try { localStorage.setItem(storageKey,JSON.stringify(next)); } catch {}
   };
 
   const ordered = useMemo(() => games
     .filter((game) => game.name.toLocaleLowerCase("es").includes(query.toLocaleLowerCase("es")))
     .filter((game) => !onlyFavorites || favorites.includes(game.id))
+    .filter((game) => yearFilter === "todos" || (game.completedAt ? String(new Date(game.completedAt*1000).getUTCFullYear()) : "Sin fecha") === yearFilter)
     .sort((a,b)=>{
       if (sort==="name") return a.name.localeCompare(b.name,"es");
       if (sort==="hours") return b.playtime-a.playtime;
       if (sort==="oldest") return (a.completedAt??Number.MAX_SAFE_INTEGER)-(b.completedAt??Number.MAX_SAFE_INTEGER);
       return (b.completedAt??0)-(a.completedAt??0);
-    }),[games,query,onlyFavorites,favorites,sort]);
+    }),[games,query,onlyFavorites,favorites,sort,yearFilter]);
 
+  const yearOptions = useMemo(() => [...new Set(games.map((game) =>
+    game.completedAt ? String(new Date(game.completedAt*1000).getUTCFullYear()) : "Sin fecha",
+  ))].sort((a,b) => a === "Sin fecha" ? 1 : b === "Sin fecha" ? -1 : Number(b)-Number(a)), [games]);
+  const topHours = [...games].sort((a,b)=>b.playtime-a.playtime)[0];
+  const topAchievements = [...games].sort((a,b)=>(b.total ?? 0)-(a.total ?? 0))[0];
+  const latestCompleted = [...games].filter((game)=>Boolean(game.completedAt))
+    .sort((a,b)=>(b.completedAt ?? 0)-(a.completedAt ?? 0))[0];
+
+  const sagaGroups = useMemo(() => {
+    const groups = new Map<string,Game[]>();
+    for (const game of ordered) {
+      const name = franchiseFor(game.name);
+      if (!groups.has(name)) groups.set(name,[]);
+      groups.get(name)!.push(game);
+    }
+    const singles: Game[] = [];
+    for (const [name,items] of groups) if (name !== "Otras obras" && items.length === 1) {
+      singles.push(...items); groups.delete(name);
+    }
+    groups.set("Otras obras",[...(groups.get("Otras obras")??[]),...singles]);
+    return [...groups.entries()].filter(([,items])=>items.length).sort((a,b) =>
+      a[0] === "Otras obras" ? 1 : b[0] === "Otras obras" ? -1 : a[0].localeCompare(b[0],"es"));
+  },[ordered]);
+  const jumpToCollection = (mode: View, nextSort?: Sort) => {
+    setView(mode);
+    if (nextSort) setSort(nextSort);
+    window.requestAnimationFrame(()=>document.getElementById("coleccion-museo")?.scrollIntoView({ behavior: "smooth", block: "start" }));
+  };
   const highlightPool = games.filter((game)=>favorites.includes(game.id));
   const highlights = highlightPool.length ? highlightPool : [...games].sort((a,b)=>(b.completedAt??0)-(a.completedAt??0));
   const featured = highlights.length ? highlights[spotlight % highlights.length] : null;
