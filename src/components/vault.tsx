@@ -12,6 +12,14 @@ type Section = "inicio" | "biblioteca" | "museo";
 
 export function Vault({ initialGames, player, isSteam, loadFailed }: { initialGames: Game[]; player: Player; isSteam: boolean; loadFailed: boolean }) {
   const router = useRouter();
+  const prefsKey = "platinum-vault:biblioteca:preferencias:" + (player.steamId ?? "demo");
+  const savedPrefs = () => {
+    try {
+      return typeof window === "undefined" ? {} : JSON.parse(localStorage.getItem(prefsKey) || "{}") as {
+        query?: string; filter?: string; sort?: string;
+      };
+    } catch { return {}; }
+  };
   const [section,setSection]=useState<Section>("inicio");
   useEffect(() => {
     const destination = new URLSearchParams(window.location.search).get("seccion");
@@ -25,10 +33,29 @@ export function Vault({ initialGames, player, isSteam, loadFailed }: { initialGa
   const [isPaused, setIsPaused] = useState(false);
   const [refreshIndex, setRefreshIndex] = useState(0);
   const [syncMessage, setSyncMessage] = useState("");
-  const [query,setQuery]=useState("");
-  const [filter,setFilter]=useState("todos");
-  const [sort,setSort]=useState("recent");
-  const openGame = (game: Game) => router.push("/juegos/" + game.id);
+  const [query,setQuery]=useState(() => savedPrefs().query ?? "");
+  const [filter,setFilter]=useState(() => savedPrefs().filter ?? "todos");
+  const [sort,setSort]=useState(() => savedPrefs().sort ?? "recent");
+  useEffect(() => {
+    try { localStorage.setItem(prefsKey, JSON.stringify({query,filter,sort})); } catch {}
+  }, [prefsKey,query,filter,sort]);
+  const openGame = (game: Game) => {
+    try { sessionStorage.setItem("platinum-vault:return:" + section, String(window.scrollY)); } catch {}
+    router.push("/juegos/" + game.id + "?desde=" + section);
+  };
+  useEffect(() => {
+    if (section === "inicio") return;
+    let stored: string | null = null;
+    try {
+      stored = sessionStorage.getItem("platinum-vault:return:" + section);
+      sessionStorage.removeItem("platinum-vault:return:" + section);
+    } catch {}
+    if (stored === null) return;
+    const position = Number(stored);
+    if (!Number.isFinite(position)) return;
+    const timeout = window.setTimeout(() => window.scrollTo({ top: position, behavior: "instant" }), 350);
+    return () => window.clearTimeout(timeout);
+  }, [section]);
   const completed=games.filter(isCompleted);
   const unfinished=games.filter(g=>!isCompleted(g));
   const shown = useMemo(() => {
@@ -208,4 +235,4 @@ export function Vault({ initialGames, player, isSteam, loadFailed }: { initialGa
 
   </div>;
 }
-function GameCard({game,onOpen}:{game:Game;onOpen:(game:Game)=>void}){return <button className="game-card" onClick={()=>onOpen(game)}><div className="card-cover"><GameArtwork id={game.id} name={game.name} iconHash={game.iconHash}/>{isCompleted(game)&&<span className="complete-chip"><Trophy size={13}/> 100 %</span>}<span className="open-icon"><ArrowUpRight size={19}/></span></div><div className="card-heading"><strong>{game.name}</strong><span>{percentage(game)===null?"—":percentage(game)+"%"}</span></div><div className="progress"><i style={{width:(percentage(game)??0)+"%"}}/></div><div className="card-bottom"><span>{hours(game.playtime)} h jugadas</span><span>{game.total===null?(game.status==="unavailable"?"No disponibles":game.status==="error"?"Error de consulta":"Sin consultar"):game.unlocked+"/"+game.total+" logros"}</span></div></button>}
+function GameCard({game,onOpen}:{game:Game;onOpen:(game:Game)=>void}){return <button className="game-card" onClick={()=>onOpen(game)}><div className="card-cover"><GameArtwork id={game.id} name={game.name} iconHash={game.iconHash}/>{isCompleted(game)&&<span className="complete-chip"><Trophy size={13}/> 100 %</span>}<span className="open-icon"><ArrowUpRight size={19}/></span></div><div className="card-heading"><strong>{game.name}</strong><span>{percentage(game)===null?"—":percentage(game)+"%"}</span></div><div className={"progress "+(game.total===null && game.status===undefined?"progress-checking":"")}><i style={{width:(percentage(game)??0)+"%"}}/></div><div className="card-bottom"><span>{hours(game.playtime)} h jugadas</span><span>{game.total===null?(game.status==="unavailable"?"No disponibles":game.status==="error"?"Error de consulta" :"Consultando…"):game.unlocked+"/"+game.total+" logros"}</span></div></button>}
