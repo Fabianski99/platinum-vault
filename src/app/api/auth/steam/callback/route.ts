@@ -18,7 +18,7 @@ export async function GET(request: NextRequest) {
   if (!nonce || !state || !equal(nonce,state)) return fail();
   const claimed = request.nextUrl.searchParams.get("openid.claimed_id");
   const identity = request.nextUrl.searchParams.get("openid.identity");
-  const match = claimed?.match(/^https:\/\/steamcommunity\.com\/openid\/id\/(\d{17})$/);
+  const match = claimed?.match(/^https?:\/\/steamcommunity\.com\/openid\/id\/(\d{17})$/);
   if (!match || identity !== claimed) return fail();
   if (request.nextUrl.searchParams.get("openid.op_endpoint") !== endpoint) return fail();
   if (request.nextUrl.searchParams.get("openid.ns") !== "http://specs.openid.net/auth/2.0") return fail();
