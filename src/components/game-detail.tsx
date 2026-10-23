@@ -79,7 +79,7 @@ export function GameDetail({ game, connected }: Props) {
       </a>
     </header>
     <section className="game-detail-hero">
-      <div className="game-detail-landscape"><GameArtwork id={game.id} name={game.name} variant="landscape" loading="eager"/></div>
+      <div className="game-detail-landscape"><GameArtwork id={game.id} name={game.name} iconHash={game.iconHash} variant="landscape" loading="eager"/></div>
       <div className="game-detail-hero-overlay"/>
       <div className="game-detail-hero-info">
         <span className="eyebrow">ARCHIVO INDIVIDUAL / STEAM {game.id}</span>
@@ -96,7 +96,7 @@ export function GameDetail({ game, connected }: Props) {
 
     <section className="game-detail-content">
       <div className="game-detail-overview">
-        <div className="game-detail-art"><GameArtwork id={game.id} name={game.name}/></div>
+        <div className="game-detail-art"><GameArtwork id={game.id} name={game.name} iconHash={game.iconHash}/></div>
         <div className="game-detail-overview-text">
           <span className="eyebrow">01 / EL REGISTRO</span>
           <h2>{complete ? "Pieza completada." : "Tu historia, logro a logro."}</h2>
