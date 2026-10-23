@@ -29,7 +29,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ app
 
     const payload = await response.json() as Record<string, StoreApp>;
     const data = payload[appId]?.data;
-    const choices = [data?.capsule_imagev5, data?.capsule_image, data?.header_image];
+    const choices = [data?.capsule_image, data?.header_image, data?.capsule_imagev5];
     const urlCandidate = choices.find((value) => {
       if (!value) return false;
       try {
