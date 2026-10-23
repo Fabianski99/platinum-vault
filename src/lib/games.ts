@@ -4,6 +4,7 @@ export type Game = {
   playtime: number;
   unlocked: number | null;
   total: number | null;
+  status?: "ready" | "unavailable" | "error";
   completedAt?: number;
   lastPlayed?: number;
   genre?: string;
