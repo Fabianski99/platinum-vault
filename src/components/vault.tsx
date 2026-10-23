@@ -25,7 +25,9 @@ export function Vault({ initialGames, player, isSteam, loadFailed }: { initialGa
     const destination = new URLSearchParams(window.location.search).get("seccion");
     // Recuperamos la pestaña de retorno al navegar desde una ficha.
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    if (destination === "biblioteca" || destination === "museo") setSection(destination);
+    const saved = (()=>{ try { return localStorage.getItem("platinum-vault:ultima-seccion"); } catch { return null; } })();
+    const target = destination ?? saved;
+    if (target === "biblioteca" || target === "museo") setSection(target);
   }, []);
   const [games,setGames]=useState(initialGames);
   const [syncState, setSyncState] = useState<"idle" | "loading" | "paused" | "complete" | "error">("idle");
@@ -186,7 +188,7 @@ export function Vault({ initialGames, player, isSteam, loadFailed }: { initialGa
     setRefreshIndex((current) => current + 1);
   };
 
-  const open=(page:Section)=>{setSection(page);window.history.replaceState(null,"",page==="inicio"?"/":"/?seccion="+page);window.scrollTo({top:0,behavior:"smooth"});};
+  const open=(page:Section)=>{setSection(page);try { localStorage.setItem("platinum-vault:ultima-seccion",page); } catch {} window.history.replaceState(null,"",page==="inicio"?"/":"/?seccion="+page);window.scrollTo({top:0,behavior:"smooth"});};
   return <div className="site">
     <header className="header">
       <button className="logo" onClick={()=>open("inicio")}><span className="logo-icon"><Trophy size={22}/></span><span>PLATINUM<b>VAULT</b><small>THE COMPLETIONIST ARCHIVE</small></span></button>
