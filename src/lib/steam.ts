@@ -44,6 +44,7 @@ export type AchievementSnapshot = {
   unlocked: number | null;
   total: number | null;
   completedAt?: number;
+  status: "ready" | "unavailable" | "error";
 };
 
 export async function getAchievementSnapshot(steamId: string, appId: number): Promise<AchievementSnapshot> {
@@ -51,16 +52,39 @@ export async function getAchievementSnapshot(steamId: string, appId: number): Pr
     const data = await steamFetch<{
       playerstats?: { success?: boolean; achievements?: Array<{ achieved: number; unlocktime?: number }> };
     }>("ISteamUserStats/GetPlayerAchievements/v1/", {
-      steamid: steamId, appid: String(appId), l: "spanish",
+      steamid: steamId,
+      appid: String(appId),
+      l: "spanish",
     });
+
     const achievements = data.playerstats?.achievements;
-    if (!data.playerstats?.success || !achievements?.length) return { id: appId, unlocked: null, total: null };
-    const won = achievements.filter((a) => a.achieved === 1);
+    // Steam también incluye aplicaciones sin logros o sin datos públicos.
+    if (!data.playerstats?.success || !achievements?.length) {
+      return { id: appId, unlocked: null, total: null, status: "unavailable" };
+    }
+
+    const won = achievements.filter((achievement) => achievement.achieved === 1);
     const completedAt = won.length === achievements.length
-      ? Math.max(...won.map((a) => a.unlocktime ?? 0))
-      : undefined;
-    return { id: appId, unlocked: won.length, total: achievements.length, ...(completedAt ? { completedAt } : {}) };
-  } catch {
-    return { id: appId, unlocked: null, total: null };
+      ? Math.max(...won.map((achievement) => achievement.unlocktime ?? 0))
+      : 0;
+
+    return {
+      id: appId,
+      unlocked: won.length,
+      total: achievements.length,
+      status: "ready",
+      ...(completedAt > 0 ? { completedAt } : {}),
+    };
+  } catch (error) {
+    // Una respuesta 400 suele indicar que esta aplicación no proporciona logros.
+    // Otras fallas de red/API se marcan para permitir reintentos.
+    const message = error instanceof Error ? error.message : "";
+    const unavailable = message.includes("(400)") || message.includes("(404)");
+    return {
+      id: appId,
+      unlocked: null,
+      total: null,
+      status: unavailable ? "unavailable" : "error",
+    };
   }
 }
