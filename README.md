@@ -1,45 +1,47 @@
 # Platinum Vault
 
-Plataforma para reunir la biblioteca de Steam y exhibir los juegos completados al 100 % como un museo digital.
+Plataforma personal conectada a Steam para explorar una biblioteca, consultar sus logros y exhibir juegos completados al 100 % como un museo interactivo.
 
 ## Tecnologías
 
-- Next.js 16 (App Router), React y TypeScript.
-- Tailwind CSS 4 y CSS personalizado para una identidad visual editorial.
-- Motion para transiciones de páginas y apariciones.
-- Lucide para iconografía.
-- Steam OpenID 2.0 y Steam Web API para identificación, biblioteca y logros.
-- Supabase / PostgreSQL, preparados para persistencia en las próximas iteraciones.
+Next.js 16 (App Router), React, TypeScript, Tailwind CSS 4, CSS, Motion, Lucide y Steam Web API. La integración de Supabase/PostgreSQL se reserva para una fase posterior.
 
-## Estado del prototipo
+## Funcionamiento
 
-El sitio tiene tres vistas: inicio, biblioteca y museo. Sin una sesión válida utiliza una colección **ficticia de demostración**, claramente identificada. No corresponde a una cuenta real.
+- Inicio de sesión mediante Steam OpenID 2.0.
+- Biblioteca real de Steam con horas jugadas, búsqueda, ordenamiento y progreso.
+- Sincronización progresiva de logros por lotes, con pausa, avance y almacenamiento temporal en el navegador.
+- Arte del juego con varias rutas de la CDN de Steam. Si falta la portada, intenta otros formatos y el icono del juego; si no hay arte oficial, utiliza una cubierta de reemplazo.
+- **Ficha individual** en `/juegos/APPID`: progreso, insignias, nombres, descripciones, desbloqueados/pendientes, fechas y rareza global cuando Steam la proporciona.
+- **Museo interactivo**: exposición destacada con navegación, galería, cronología, búsqueda, orden y selección de obras favoritas.
+- Las favoritas del museo se guardan únicamente en este navegador, separadas por SteamID.
 
-Con una sesión de Steam, obtiene la biblioteca visible y consulta automáticamente los logros por grupos de ocho juegos, con concurrencia limitada y barra de progreso. La biblioteca puede ordenarse por última actividad, orden alfabético, horas jugadas o progreso. La colección del museo se forma únicamente con juegos cuyo total de logros se haya podido comprobar. Puedes pausar la consulta o repetirla si algún juego no se actualizó.
-
-**Limitaciones actuales:** la sincronización de logros no se guarda todavía en Supabase; se conserva temporalmente en este navegador durante 12 horas; no hay base de datos activa, estadísticas históricas persistentes, guías ni recomendador. La fecha del último logro se usa como aproximación de la finalización del 100 %, no como certificación histórica del platino.
+Las fechas de finalización corresponden al **último logro registrado** cuando está disponible; Steam no siempre permite reconstruir la primera vez que un juego se completó al 100 %.
 
 ## Configuración local
 
-1. Instalar dependencias mediante `npm install`.
-2. Copiar `.env.example` a `.env.local`.
-3. Configurar:
-   - `NEXT_PUBLIC_APP_URL=http://localhost:3000`
-   - `STEAM_API_KEY`: clave Web API del propietario del sitio.
-   - `STEAM_SESSION_SECRET`: secreto aleatorio de **al menos 32 caracteres**, exclusivo del proyecto.
-4. Ejecutar `npm run dev`.
-5. Abrir `http://localhost:3000`.
+1. Instala las dependencias con `npm install`.
+2. Copia `.env.example` a `.env.local`.
+3. Configura `NEXT_PUBLIC_APP_URL=http://localhost:3000`, tu `STEAM_API_KEY` y un `STEAM_SESSION_SECRET` aleatorio de al menos 32 caracteres.
+4. Ejecuta `npm run dev` y abre `http://localhost:3000`.
 
-Las variables de Supabase están documentadas, pero no son necesarias para este prototipo. No subir claves privadas ni `.env.local` al repositorio.
+Nunca subas `.env.local` ni expongas las claves. La cuenta de Steam debe permitir acceder a los detalles de los juegos para que funcione la biblioteca.
 
-Steam requiere que la información del perfil y los detalles de juegos estén disponibles para la consulta. Si la API no puede obtener los datos, la interfaz mostrará un mensaje y regresará a la demostración.
+## Comprobaciones
 
-Para comprobar el código: `npm run lint` y `npm run build`.
+```bash
+npm run lint
+npm run build
+```
 
-## Alcance
+## Limitaciones conocidas
 
-**Etapa 1:** vinculación con Steam, lectura de biblioteca y logros consultados bajo demanda.
+- Algunas aplicaciones, herramientas y juegos de Steam no disponen de arte o logros públicos. No se inventa información para rellenar esas ausencias.
+- La consulta de logros y sus porcentajes depende de Steam y de la privacidad del perfil. Las llamadas pueden fallar o ser limitadas.
+- Las fichas de la demostración no muestran logros ficticios: para obtener los logros auténticos hay que iniciar sesión.
+- Todavía no hay base de datos persistente, perfiles públicos ni guías personalizadas. Tampoco se ha desplegado a Vercel.
+- Las imágenes de Steam pueden cambiar o desaparecer de sus servidores.
 
-**Etapa 2:** exposición visual de completados al 100 %, fichas y navegación entre colecciones.
+## Próximas etapas
 
-Próximos pasos: persistir datos en Supabase, guardar instantáneas verificables, mejorar la sincronización y desarrollar las guías personalizadas.
+Validar en la cuenta real las fichas y la colección, introducir Supabase para persistencia y preparar el despliegue. Después se desarrollará el motor de guías personalizadas.
