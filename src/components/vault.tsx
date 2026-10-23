@@ -23,10 +23,10 @@ export function Vault({ initialGames, player, isSteam, loadFailed }: { initialGa
   const [section,setSection]=useState<Section>("inicio");
   useEffect(() => {
     const destination = new URLSearchParams(window.location.search).get("seccion");
-    // Recuperamos la pestaña de retorno al navegar desde una ficha.
-    // eslint-disable-next-line react-hooks/set-state-in-effect
+    // Recuperar la sección al volver desde una ficha o reabrir la página.
     const saved = (()=>{ try { return localStorage.getItem("platinum-vault:ultima-seccion"); } catch { return null; } })();
     const target = destination ?? saved;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (target === "biblioteca" || target === "museo") setSection(target);
   }, []);
   const [games,setGames]=useState(initialGames);
