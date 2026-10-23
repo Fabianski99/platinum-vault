@@ -1,69 +1,50 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
-  return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
-  );
+import { useMemo, useState } from "react";
+import { motion, AnimatePresence } from "motion/react";
+import { ArrowRight, ArrowUpRight, Check, ExternalLink, Gamepad2, LibraryBig, LogIn, Search, Trophy, X } from "lucide-react";
+import { demoGames, poster, percentage, isCompleted, hours, completionDate, type Game } from "@/lib/games";
+
+type Section = "inicio" | "biblioteca" | "museo";
+
+function Cover({game}:{game:Game}) {
+  const [error,setError]=useState(false);
+  return error?<div className="cover-fallback"><Gamepad2 size={30}/><span>{game.name}</span></div>:<img src={poster(game.id)} alt={game.name} loading="lazy" onError={()=>setError(true)}/>;
 }
+export default function Home() {
+  const [section,setSection]=useState<Section>("inicio");
+  const [query,setQuery]=useState("");
+  const [filter,setFilter]=useState("todos");
+  const [selected,setSelected]=useState<Game|null>(null);
+  const completed=demoGames.filter(isCompleted);
+  const unfinished=demoGames.filter(g=>!isCompleted(g));
+  const shown=useMemo(()=>demoGames.filter(g=>g.name.toLowerCase().includes(query.toLowerCase())).filter(g=>filter==="todos"||(filter==="completos"?isCompleted(g):!isCompleted(g))),[query,filter]);
+  const open=(page:Section)=>{setSection(page);window.scrollTo({top:0,behavior:"smooth"});};
+  return <div className="site">
+    <header className="header">
+      <button className="logo" onClick={()=>open("inicio")}><span className="logo-icon"><Trophy size={22}/></span><span>PLATINUM<b>VAULT</b><small>THE COMPLETIONIST ARCHIVE</small></span></button>
+      <nav>{(["inicio","biblioteca","museo"] as Section[]).map((part,i)=><button className={section===part?"active":""} onClick={()=>open(part)} key={part}><sup>0{i+1}</sup>{part==="inicio"?"Inicio":part==="biblioteca"?"Biblioteca":"El museo"}</button>)}</nav>
+      <a className="steam-button" href="/api/auth/steam"><LogIn size={16}/> Conectar Steam</a>
+    </header>
+    <AnimatePresence mode="wait"><motion.main key={section} initial={{opacity:0,y:14}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-12}} transition={{duration:.35}}>
+    {section==="inicio"&&<>
+      <section className="hero">
+        <div className="hero-photo"/><div className="hero-cover"/>
+        <div className="hero-content"><span className="eyebrow">✳ &nbsp; EL ARCHIVO DE TUS GRANDES CONQUISTAS</span><h1>NO SOLO<br/>LOS JUEGAS.<br/><em>LOS CONQUISTAS.</em></h1><p>Cada historia terminada merece un lugar en la memoria. Reúne tu biblioteca, celebra tus juegos al 100 % y construye el legado de todo lo que has superado.</p><div className="hero-actions"><button className="primary" onClick={()=>open("museo")}>Entrar al museo <ArrowUpRight size={18}/></button><button className="secondary" onClick={()=>open("biblioteca")}>Explorar biblioteca <ArrowRight size={18}/></button></div><span className="hero-label">PLATINUM VAULT — EDICIÓN DE EXPLORACIÓN / 001</span></div>
+      </section>
+      <div className="demo-banner">✳ &nbsp; EDICIÓN DEMOSTRATIVA — Los juegos y estadísticas son ejemplos, no datos de tu cuenta. Conecta Steam próximamente.</div>
+      <section className="stats"><div><span>01 / EL CATÁLOGO</span><strong>{demoGames.length.toString().padStart(2,"0")}</strong><small>JUEGOS EN EL ARCHIVO</small></div><div><span>02 / LA COLECCIÓN</span><strong>{completed.length.toString().padStart(2,"0")}</strong><small>OBRAS COMPLETADAS</small></div><div><span>03 / TIEMPO INVERTIDO</span><strong>{hours(demoGames.reduce((total,g)=>total+g.playtime,0))}<i>h</i></strong><small>HORAS DE HISTORIA</small></div><div className="quote">«La verdadera recompensa<br/>es el camino recorrido.»<span>— EL ESPÍRITU COMPLETISTA</span></div></section>
+      <section className="section"><div className="section-title"><div><span className="eyebrow">✳ &nbsp; SALA 01 / LAS PIEZAS DESTACADAS</span><h2>El salón de los inmortales</h2></div><p>Una colección que cuenta historias. Cada juego completado es una pieza que se añade a tu legado.</p></div>
+      <div className="featured">{completed.slice(0,3).map((game,i)=><button className="feature" onClick={()=>setSelected(game)} key={game.id}><Cover game={game}/><span className="feature-shade"/><span className="feature-number">N.º {String(i+1).padStart(2,"0")}</span><span className="feature-copy"><small>COLECCIÓN COMPLETADA</small><strong>{game.name}</strong><span>Explorar pieza <ArrowUpRight size={17}/></span></span></button>)}</div>
+      <div className="section-bottom"><button onClick={()=>open("museo")}>EXPLORAR TODO EL MUSEO <ArrowUpRight size={18}/></button><span>{completed.length} PIEZAS EN EXPOSICIÓN</span></div></section>
+      <div className="manifesto"><span className="manifesto-symbol"><Trophy size={95} strokeWidth={.7}/></span><div><span className="eyebrow">UNA FILOSOFÍA</span><h2>EL FINAL DE UN JUEGO<br/>ES EL PRINCIPIO <em>DE SU LEGADO.</em></h2><p>Tu biblioteca no es una lista. Es el mapa de tus aventuras, los desafíos que superaste y los que todavía te esperan.</p></div><button onClick={()=>open("biblioteca")} aria-label="Abrir biblioteca"><ArrowUpRight size={26}/></button></div>
+      <section className="section"><div className="section-title"><div><span className="eyebrow">✳ &nbsp; SALA 02 / EN PROGRESO</span><h2>Todavía queda camino</h2></div><p>Retoma tus aventuras pendientes y descubre cuánto falta para llegar al final.</p></div><div className="game-grid">{unfinished.slice(0,5).map(game=><GameCard game={game} onOpen={setSelected} key={game.id}/>)}</div><div className="section-bottom"><button onClick={()=>open("biblioteca")}>VER LA BIBLIOTECA COMPLETA <ArrowUpRight size={18}/></button></div></section>
+    </>}
+    {section==="biblioteca"&&<div className="inner-page"><div className="page-hero"><span className="eyebrow">ÍNDICE / 02 — BIBLIOTECA</span><h1>CADA MUNDO.<br/><em>UNA HISTORIA.</em></h1><p>Todo lo que has explorado, en un solo lugar. Busca, filtra y descubre qué aventuras esperan su última conquista.</p><LibraryBig className="page-watermark" size={190} strokeWidth={.4}/></div><div className="toolbar"><label className="search"><Search size={19}/><input placeholder="Buscar entre tus juegos..." aria-label="Buscar juegos" value={query} onChange={e=>setQuery(e.target.value)}/></label><div className="filters">{[["todos","Todos"],["completos","Completados"],["pendientes","En progreso"]].map(([id,label])=><button key={id} className={filter===id?"selected":""} onClick={()=>setFilter(id)}>{label}</button>)}</div></div><div className="count-line">{shown.length} JUEGOS EN ESTA SELECCIÓN <span>VISTA / CATÁLOGO</span></div>{shown.length?<div className="game-grid library-grid">{shown.map(game=><GameCard game={game} onOpen={setSelected} key={game.id}/>)}</div>:<div className="empty">No hay juegos para esta búsqueda.</div>}</div>}
+    {section==="museo"&&<div className="museum"><div className="museum-hero"><span className="eyebrow">COLECCIÓN PERMANENTE / SALA 01</span><h1>EL MUSEO<br/><em>DE LO IMPOSIBLE.</em></h1><p>No se trata solo de llegar a los créditos. Se trata de haberlo visto todo, superado todo y dejado tu huella en cada mundo.</p><div className="museum-total"><strong>{String(completed.length).padStart(2,"0")}</strong><span>JUEGOS COMPLETADOS<br/>AL 100 %</span></div><div className="museum-watermark">PV</div></div><div className="museum-intro"><span>01 — COLECCIÓN PERMANENTE</span><p>Las obras que han alcanzado su forma definitiva. Cada pieza reúne sus logros, las horas invertidas y el último capítulo de su historia.</p></div><div className="museum-grid">{completed.map((game,i)=><motion.button className="museum-piece" onClick={()=>setSelected(game)} initial={{opacity:0,y:22}} animate={{opacity:1,y:0}} transition={{delay:i*.08}} key={game.id}><div className="picture-frame"><Cover game={game}/><span className="medal"><Check size={20}/></span></div><div className="piece-id">OBRA Nº {String(i+1).padStart(3,"0")} <span>✳ COLECCIÓN COMPLETA</span></div><h3>{game.name}</h3><div className="piece-meta"><span>{game.total} LOGROS</span><span>{hours(game.playtime)} HORAS</span></div></motion.button>)}</div><div className="museum-outro">✳<p>LA COLECCIÓN NUNCA ESTÁ TERMINADA.</p><button onClick={()=>open("biblioteca")}>Descubrir el próximo desafío <ArrowUpRight size={17}/></button></div></div>}
+    </motion.main></AnimatePresence>
+    <footer><span>PV<span className="gold">✳</span></span><p>UNA VIDA DE JUEGOS. UN ARCHIVO PARA RECORDARLOS.</p><small>PLATINUM VAULT © 2026</small></footer>
+    <AnimatePresence>{selected&&<motion.div className="modal-backdrop" initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}} onMouseDown={()=>setSelected(null)}><motion.article className="detail" role="dialog" aria-modal="true" aria-label={selected.name} initial={{scale:.94,y:20}} animate={{scale:1,y:0}} exit={{scale:.94,opacity:0}} onMouseDown={e=>e.stopPropagation()}><button className="close" onClick={()=>setSelected(null)} aria-label="Cerrar"><X size={20}/></button><div className="detail-art"><Cover game={selected}/></div><div className="detail-body"><span className="eyebrow">ARCHIVO / {selected.id}</span><h2>{selected.name}</h2><p>{isCompleted(selected)?"Una conquista más para tu colección.":"Una historia que todavía tiene capítulos por completar."}</p><div className="detail-stats"><div><small>HORAS JUGADAS</small><strong>{hours(selected.playtime)} h</strong></div><div><small>LOGROS</small><strong>{selected.unlocked}/{selected.total}</strong></div><div><small>PROGRESO</small><strong>{percentage(selected)}%</strong></div></div>{isCompleted(selected)&&<div className="complete-note"><Trophy size={20}/><span>OBRA COMPLETADA AL 100 %<small>{completionDate(selected.completedAt)}</small></span></div>}<a href={"https://store.steampowered.com/app/"+selected.id} target="_blank" rel="noopener noreferrer">Ver en Steam <ExternalLink size={16}/></a></div></motion.article></motion.div>}</AnimatePresence>}
+  </div>;
+}
+function GameCard({game,onOpen}:{game:Game;onOpen:(game:Game)=>void}){return <button className="game-card" onClick={()=>onOpen(game)}><div className="card-cover"><Cover game={game}/>{isCompleted(game)&&<span className="complete-chip"><Trophy size={13}/> 100 %</span>}<span className="open-icon"><ArrowUpRight size={19}/></span></div><div className="card-heading"><strong>{game.name}</strong><span>{percentage(game)}%</span></div><div className="progress"><i style={{width:percentage(game)+"%"}}/></div><div className="card-bottom"><span>{hours(game.playtime)} h jugadas</span><span>{game.unlocked}/{game.total} logros</span></div></button>}
