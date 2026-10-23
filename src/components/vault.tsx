@@ -15,6 +15,8 @@ export function Vault({ initialGames, player, isSteam, loadFailed }: { initialGa
   const [section,setSection]=useState<Section>("inicio");
   useEffect(() => {
     const destination = new URLSearchParams(window.location.search).get("seccion");
+    // Recuperamos la pestaña de retorno al navegar desde una ficha.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (destination === "biblioteca" || destination === "museo") setSection(destination);
   }, []);
   const [games,setGames]=useState(initialGames);
