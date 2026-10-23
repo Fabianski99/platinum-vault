@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { motion } from "motion/react";
-import { ArrowLeft, ArrowUpRight, Award, CalendarDays, Check, ExternalLink, Filter, Gamepad2, LockKeyhole, Search, Trophy } from "lucide-react";
+import { ArrowLeft, ArrowUpRight, Award, CalendarDays, Check, ExternalLink, Filter, Gamepad2, LockKeyhole, Search, Trophy, Eye, EyeOff, Clock3, Target, Sparkles } from "lucide-react";
 import type { Game } from "@/lib/games";
 import { completionDate, hours, isCompleted, percentage } from "@/lib/games";
 import type { AchievementDetail, GameAchievementData } from "@/lib/achievement";
@@ -24,6 +24,7 @@ export function GameDetail({ game, connected }: Props) {
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<FilterType>("all");
   const [order, setOrder] = useState<OrderType>("default");
+  const [revealHidden, setRevealHidden] = useState(false);
 
   useEffect(() => {
     if (!connected) return;
@@ -52,12 +53,28 @@ export function GameDetail({ game, connected }: Props) {
   const total = data?.total ?? game.total;
   const pct = total && unlocked !== null ? Math.round(unlocked / total * 100) : percentage(game);
   const complete = data?.available ? data.unlocked === data.total && data.total > 0 : isCompleted(game);
-  const rarest = list.filter((item) => item.globalPercent !== null).sort((a, b) => (a.globalPercent ?? 100) - (b.globalPercent ?? 100))[0];
+  const rarest = [...list].filter((item) => item.unlocked && item.globalPercent !== null)
+    .sort((a, b) => (a.globalPercent ?? 100) - (b.globalPercent ?? 100))[0];
+  const pending = list.filter((item) => !item.unlocked);
+  const unlockedList = list.filter((item) => item.unlocked);
+  const hiddenCount = list.filter((item) => item.hidden).length;
+  const rareCount = list.filter((item) => item.globalPercent !== null && item.globalPercent <= 10).length;
+  const latestUnlocked = [...unlockedList].filter((item) => item.unlockTime)
+    .sort((a, b) => (b.unlockTime ?? 0) - (a.unlockTime ?? 0)).slice(0, 3);
+  // Popularidad global: no equivale a dificultad ni permite estimar tiempo.
+  const commonPending = [...pending].filter((item) => item.globalPercent !== null)
+    .sort((a, b) => (b.globalPercent ?? 0) - (a.globalPercent ?? 0)).slice(0, 3);
+  const displayName = (item: AchievementDetail) =>
+    item.hidden && !item.unlocked && !revealHidden ? "Logro oculto" : item.name;
+  const displayDescription = (item: AchievementDetail) =>
+    item.hidden && !item.unlocked && !revealHidden
+      ? "Steam mantiene este objetivo oculto. Activa «Revelar ocultos» para ver los detalles disponibles."
+      : item.description || "Sin descripción disponible en Steam.";
 
   const shown = useMemo(() => {
     const text = search.trim().toLocaleLowerCase("es");
     return list
-      .filter((item) => !text || (item.name + " " + item.description).toLocaleLowerCase("es").includes(text))
+      .filter((item) => !text || ((item.hidden && !item.unlocked && !revealHidden ? "logro oculto" : item.name + " " + item.description).toLocaleLowerCase("es").includes(text)))
       .filter((item) => filter === "all"
         || (filter === "unlocked" && item.unlocked)
         || (filter === "locked" && !item.unlocked)
@@ -68,7 +85,7 @@ export function GameDetail({ game, connected }: Props) {
         if (order === "latest") return (b.unlockTime ?? 0) - (a.unlockTime ?? 0);
         return 0;
       });
-  }, [list, search, filter, order]);
+  }, [list, search, filter, order, revealHidden]);
 
   return <main className="game-detail-page">
     <header className="game-detail-nav">
