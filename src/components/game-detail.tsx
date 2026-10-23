@@ -12,6 +12,7 @@ import { GameArtwork } from "@/components/game-artwork";
 type Props = { game: Game; connected: boolean; returnSection?: "inicio" | "biblioteca" | "museo" };
 type FilterType = "all" | "unlocked" | "locked" | "rare";
 type OrderType = "default" | "rarity" | "latest" | "name";
+const EMPTY_ACHIEVEMENTS: AchievementDetail[] = [];
 
 function formatDate(timestamp: number | null) {
   return timestamp ? completionDate(timestamp) : "Sin fecha";
@@ -48,7 +49,7 @@ export function GameDetail({ game, connected, returnSection = "biblioteca" }: Pr
     return () => controller.abort();
   }, [game.id, connected]);
 
-  const list = data?.achievements ?? [];
+  const list = data?.achievements ?? EMPTY_ACHIEVEMENTS;
   const unlocked = data?.unlocked ?? game.unlocked;
   const total = data?.total ?? game.total;
   const pct = total && unlocked !== null ? Math.round(unlocked / total * 100) : percentage(game);
@@ -59,6 +60,7 @@ export function GameDetail({ game, connected, returnSection = "biblioteca" }: Pr
   const unlockedList = list.filter((item) => item.unlocked);
   const hiddenCount = list.filter((item) => item.hidden).length;
   const rareCount = list.filter((item) => item.globalPercent !== null && item.globalPercent <= 10).length;
+  const hasGlobalStats = list.some((item) => item.globalPercent !== null);
   const latestUnlocked = [...unlockedList].filter((item) => item.unlockTime)
     .sort((a, b) => (b.unlockTime ?? 0) - (a.unlockTime ?? 0)).slice(0, 3);
   // Popularidad global: no equivale a dificultad ni permite estimar tiempo.
@@ -134,7 +136,7 @@ export function GameDetail({ game, connected, returnSection = "biblioteca" }: Pr
         <div className="game-insight-label"><span className="eyebrow">02 / TU PROGRESO</span><h2>Detrás de cada logro</h2></div>
         <div className="game-insight-stats">
           <div><Target size={20}/><strong>{pending.length}</strong><span>Objetivos pendientes</span></div>
-          <div><Sparkles size={20}/><strong>{rareCount}</strong><span>Logros raros (10 % global o menos)</span></div>
+          <div><Sparkles size={20}/><strong>{hasGlobalStats?rareCount:"—"}</strong><span>{hasGlobalStats?"Logros raros (10 % global o menos)":"Rareza global no disponible"}</span></div>
           <div><Eye size={20}/><strong>{hiddenCount}</strong><span>Logros señalados como ocultos</span></div>
         </div>
         <div className="game-curations">
