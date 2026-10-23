@@ -22,6 +22,8 @@ export function MuseumExperience({ games, onOpen, ownerKey }: Props) {
   useEffect(() => {
     try {
       const value = JSON.parse(localStorage.getItem(storageKey) || "[]") as unknown;
+      // Restaurar la selección local tras la hidratación del navegador.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       if (Array.isArray(value)) setFavorites(value.filter((item):item is number => typeof item === "number"));
     } catch { /* La galería también funciona sin almacenamiento local. */ }
   }, [storageKey]);
