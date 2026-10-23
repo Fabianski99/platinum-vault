@@ -1,0 +1,33 @@
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import { demoGames } from "@/lib/games";
+import { getSteamId } from "@/lib/session";
+import { getOwnedGames } from "@/lib/steam";
+import { GameDetail } from "@/components/game-detail";
+
+export default async function GamePage({ params }: { params: Promise<{ appId: string }> }) {
+  const { appId: raw } = await params;
+  if (!/^\d{1,10}$/.test(raw)) notFound();
+  const id = Number(raw);
+  if (!Number.isSafeInteger(id) || id < 1 || id > 4294967295) notFound();
+
+  const steamId = await getSteamId();
+  if (!steamId) {
+    const example = demoGames.find((game) => game.id === id);
+    if (!example) notFound();
+    return <GameDetail game={example} connected={false}/>;
+  }
+
+  try {
+    const games = await getOwnedGames(steamId);
+    const game = games.find((entry) => entry.id === id);
+    if (!game) notFound();
+    return <GameDetail game={game} connected={true}/>;
+  } catch {
+    return <main className="detail-error-page">
+      <h1>No se pudo cargar la biblioteca de Steam</h1>
+      <p>Comprueba que tu perfil esté disponible y vuelve a intentarlo.</p>
+      <Link href="/?seccion=biblioteca">Volver a la biblioteca</Link>
+    </main>;
+  }
+}
