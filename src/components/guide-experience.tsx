@@ -62,6 +62,7 @@ export function GuideExperience({connected,steamId,gameTitle,iconHash}:Props) {
   const [error,setError] = useState("");
   const [retry,setRetry] = useState(0);
   const [showUnlocked,setShowUnlocked] = useState(false);
+  const [revealHidden,setRevealHidden] = useState(false);
   const [query,setQuery] = useState("");
   const settings=useSavedGuideSettings("platinum-vault:guia:v1:"+steamId+":"+GUIDE_APP_ID);
 
@@ -140,7 +141,7 @@ export function GuideExperience({connected,steamId,gameTitle,iconHash}:Props) {
         </div>
         <div className="guide-list-header"><div><span className="guide-kicker"><ListChecks size={16}/> RUTA PERSONALIZADA</span><h2>Lo que te queda por hacer</h2></div>
           <div><label className="guide-search"><Search size={17}/><input placeholder="Buscar logros..." value={query} onChange={(e)=>setQuery(e.target.value)}/></label>
-            <label className="guide-show-won"><input type="checkbox" checked={showUnlocked} onChange={(e)=>setShowUnlocked(e.target.checked)}/> Ver ya obtenidos</label></div>
+            <label className="guide-show-won"><input type="checkbox" checked={showUnlocked} onChange={(e)=>setShowUnlocked(e.target.checked)}/> Ver ya obtenidos</label><label className="guide-show-won"><input type="checkbox" checked={revealHidden} onChange={(e)=>setRevealHidden(e.target.checked)}/> Revelar ocultos</label></div>
         </div>
         <div className="guide-stages">
           {order.map((stage,index)=>{
@@ -159,10 +160,10 @@ export function GuideExperience({connected,steamId,gameTitle,iconHash}:Props) {
               {!pending.length&&<div className="guide-stage-done"><CheckCircle2 size={17}/> Todos los logros de esta fase están obtenidos.</div>}
               {visible.length>0&&<div className="guide-achievements">{visible.map(({achievement,tip,verified})=><article key={achievement.apiName} className={"guide-achievement "+(achievement.unlocked?"guide-achievement-won":"")}>
                 <span>{achievement.unlocked?<CheckCircle2 size={22}/>:<Trophy size={22}/>}</span>
-                <div><strong>{achievement.name}</strong><p>{achievement.hidden&&!achievement.unlocked?"Objetivo oculto en Steam. Revisa su ficha si quieres revelar detalles.":achievement.description||"Descripción no disponible."}</p>
+                <div><strong>{achievement.hidden&&!achievement.unlocked&&!revealHidden?"Logro oculto":achievement.name}</strong><p>{achievement.hidden&&!achievement.unlocked&&!revealHidden?"Objetivo oculto en Steam. Puedes revelar su contenido si lo deseas.":achievement.description||"Descripción no disponible."}</p>
                   {tip&&<small className="guide-tip">Consejo: {tip}</small>}
                   <div className="guide-labels">
-                    {verified?<><span>Sin requisito de dificultad</span>{stage==="online"&&<span>Multijugador</span>}{stage==="dlc"&&<span>Contenido adicional</span>}</>
+                    {verified?<><span>No perdible</span><span>Sin NG+</span><span>Dificultad libre</span>{stage==="online"&&<span>Multijugador</span>}{stage==="dlc"&&<span>Contenido adicional</span>}</>
                     :<span>Clasificación pendiente de confirmar</span>}
                   </div>
                 </div><span className="guide-achievement-state">{achievement.unlocked?"Obtenido en Steam":"Pendiente"}</span>
