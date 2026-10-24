@@ -2,9 +2,8 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { AnimatePresence, motion } from "motion/react";
 import {
-  ArrowLeft, ArrowRight, BookOpenCheck, Check, CheckCircle2, CircleAlert,
+  ArrowLeft, ArrowRight, BookOpenCheck, CheckCircle2, CircleAlert,
   CircleHelp, Clock3, ExternalLink, Flag, Gamepad2, ListChecks, LoaderCircle,
   LockKeyhole, MonitorPlay, RotateCcw, Search, ShieldAlert, SlidersHorizontal, Trophy,
 } from "lucide-react";
@@ -30,6 +29,7 @@ function useSavedGuideSettings(key: string) {
   const [story,setStory] = useState<Story>("en-curso");
   const [multi,setMulti] = useState<Multi>("al-final");
   const [hasDlc,setHasDlc] = useState(true);
+  const [loaded,setLoaded] = useState(false);
   useEffect(()=>{
     try {
       const stored = JSON.parse(localStorage.getItem(key) || "null") as {
@@ -46,10 +46,12 @@ function useSavedGuideSettings(key: string) {
         setHasDlc(stored.hasDlc!==false);
       }
     }catch{}
+    setLoaded(true);
   },[key]);
   useEffect(()=>{
+    if(!loaded)return;
     try{localStorage.setItem(key,JSON.stringify({manual,story,multi,hasDlc}));}catch{}
-  },[key,manual,story,multi,hasDlc]);
+  },[key,manual,story,multi,hasDlc,loaded]);
   return {manual,setManual,story,setStory,multi,setMulti,hasDlc,setHasDlc};
 }
 
