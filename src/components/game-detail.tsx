@@ -9,7 +9,7 @@ import { completionDate, hours, isCompleted, percentage } from "@/lib/games";
 import type { AchievementDetail, GameAchievementData } from "@/lib/achievement";
 import { GameArtwork } from "@/components/game-artwork";
 
-type Props = { game: Game; connected: boolean; returnSection?: "inicio" | "biblioteca" | "museo" };
+type Props = { game: Game; connected: boolean; returnSection?: "inicio" | "biblioteca" | "museo" | "planificador" };
 type FilterType = "all" | "unlocked" | "locked" | "rare";
 type OrderType = "default" | "rarity" | "latest" | "name";
 const EMPTY_ACHIEVEMENTS: AchievementDetail[] = [];
@@ -91,7 +91,7 @@ export function GameDetail({ game, connected, returnSection = "biblioteca" }: Pr
 
   return <main className="game-detail-page">
     <header className="game-detail-nav">
-      <Link href={returnSection === "inicio" ? "/" : "/?seccion=" + returnSection}><ArrowLeft size={17}/> Volver a {returnSection === "museo" ? "el museo" : returnSection === "inicio" ? "inicio" : "la biblioteca"}</Link>
+      <Link href={returnSection === "planificador" ? "/planificador" : returnSection === "inicio" ? "/" : "/?seccion=" + returnSection}><ArrowLeft size={17}/> Volver a {returnSection === "planificador" ? "mi planificador" : returnSection === "museo" ? "el museo" : returnSection === "inicio" ? "inicio" : "la biblioteca"}</Link>
       <Link href="/" className="game-detail-brand"><Trophy size={18}/> PLATINUM<span>VAULT</span></Link>
       <a target="_blank" rel="noopener noreferrer" href={"https://store.steampowered.com/app/" + game.id}>
         Página de Steam <ExternalLink size={15}/>
