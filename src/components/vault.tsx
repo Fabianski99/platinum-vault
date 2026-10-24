@@ -3,10 +3,11 @@
 import { useEffect, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { GameArtwork } from "@/components/game-artwork";
 import { MuseumExperience } from "@/components/museum-experience";
 import { HomeExperience } from "@/components/home-experience";
-import { ArrowUpRight, House, LibraryBig, GalleryVerticalEnd, LogIn, LogOut, Search, Trophy, RefreshCw, Pause, Play, ChevronDown, CircleUserRound } from "lucide-react";
+import { ArrowUpRight, House, LibraryBig, GalleryVerticalEnd, ClipboardList, LogIn, LogOut, Search, Trophy, RefreshCw, Pause, Play, ChevronDown, CircleUserRound } from "lucide-react";
 import { percentage, isCompleted, hours, type Game, type Player } from "@/lib/games";
 
 type Section = "inicio" | "biblioteca" | "museo";
@@ -201,6 +202,7 @@ export function Vault({ initialGames, player, isSteam, loadFailed }: { initialGa
         <button className={"pv-nav-tab "+(section==="inicio"?"active":"")} onClick={()=>open("inicio")} aria-current={section==="inicio"?"page":undefined}><House size={18}/> Inicio</button>
         <button className={"pv-nav-tab "+(section==="biblioteca"?"active":"")} onClick={()=>open("biblioteca")} aria-current={section==="biblioteca"?"page":undefined}><LibraryBig size={18}/> Biblioteca</button>
         <button className={"pv-nav-tab "+(section==="museo"?"active":"")} onClick={()=>open("museo")} aria-current={section==="museo"?"page":undefined}><GalleryVerticalEnd size={18}/> Mi museo</button>
+        <Link className="pv-nav-tab pv-nav-link" href="/planificador"><ClipboardList size={18}/> Planificador</Link>
       </nav>
       <div className="pv-top-actions">
         {isSteam?<><span className="pv-account-name"><CircleUserRound size={18}/><span>{player.name}</span></span><a className="pv-logout" href="/api/auth/logout" title="Cerrar sesión en Platinum Vault" aria-label="Cerrar sesión"><LogOut size={19}/></a></>:
