@@ -1,7 +1,7 @@
 import "server-only";
 import type { Game, Player } from "@/lib/games";
 
-type OwnedGame = { appid: number; name?: string; playtime_forever?: number; rtime_last_played?: number; img_icon_url?: string };
+type OwnedGame = { appid: number; name?: string; playtime_forever?: number; rtime_last_played?: number; img_icon_url?: string; family_shared?: boolean | number };
 
 async function steamFetch<T>(path: string, params: Record<string, string>): Promise<T> {
   const key = process.env.STEAM_API_KEY;
@@ -24,14 +24,20 @@ export async function getSteamProfile(steamId: string): Promise<Player> {
 export async function getOwnedGames(steamId: string): Promise<Game[]> {
   const data = await steamFetch<{ response?: { games?: OwnedGame[] } }>(
     "IPlayerService/GetOwnedGames/v1/",
-    { steamid: steamId, include_appinfo: "true", include_played_free_games: "true" }
+    { steamid: steamId, include_appinfo: "true", include_played_free_games: "true", include_family_licenses: "true" }
   );
-  return (data.response?.games ?? [])
-    .filter((game) => game.name && Number.isInteger(game.appid))
+  const unique = new Map<number, OwnedGame>();
+  for (const game of data.response?.games ?? []) {
+    if (!game.name || !Number.isInteger(game.appid)) continue;
+    const existing = unique.get(game.appid);
+    if (!existing || (existing.family_shared && !game.family_shared)) unique.set(game.appid, game);
+  }
+  return [...unique.values()]
     .map((game) => ({
       id: game.appid,
       name: game.name!,
       iconHash: game.img_icon_url,
+      familyShared: game.family_shared === true || game.family_shared === 1,
       playtime: (game.playtime_forever ?? 0) / 60,
       unlocked: null,
       total: null,
