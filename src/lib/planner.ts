@@ -23,7 +23,9 @@ export function readPlanner(steamId: string, library: Game[]): PlannedGame[] {
   if (typeof window === "undefined") return [];
   const known = new Set(library.map((g) => g.id));
   let list: PlannedGame[] = [];
+  let hasStoredPlan = false;
   try {
+    hasStoredPlan = localStorage.getItem(plannerKey(steamId)) !== null;
     const raw: unknown = JSON.parse(localStorage.getItem(plannerKey(steamId)) || "null");
     if (Array.isArray(raw)) list = raw.flatMap((item: unknown): PlannedGame[] => {
       if (!item || typeof item !== "object") return [];
@@ -40,7 +42,7 @@ export function readPlanner(steamId: string, library: Game[]): PlannedGame[] {
   } catch {}
   // Migrar la selección anterior del inicio sin perder sus cinco destacados.
   try {
-    const legacy: unknown = JSON.parse(localStorage.getItem(showcaseKey(steamId)) || "[]");
+    const legacy: unknown = hasStoredPlan ? [] : JSON.parse(localStorage.getItem(showcaseKey(steamId)) || "[]");
     if (Array.isArray(legacy)) {
       for (const id of legacy) {
         if (typeof id === "number" && known.has(id) && !list.some((item) => item.appId === id)) {
@@ -54,6 +56,11 @@ export function readPlanner(steamId: string, library: Game[]): PlannedGame[] {
 export function savePlanner(steamId: string, items: PlannedGame[]) {
   try {
     localStorage.setItem(plannerKey(steamId), JSON.stringify(items));
+    // Los cinco títulos prioritarios continúan visibles en la portada anterior.
+    const nextFeatured = [...items].filter((item)=>item.status!=="pausado")
+      .sort((a,b)=>priorityOrder[a.priority]-priorityOrder[b.priority] || a.addedAt-b.addedAt)
+      .slice(0,5).map((item)=>item.appId);
+    localStorage.setItem(showcaseKey(steamId), JSON.stringify(nextFeatured));
     window.dispatchEvent(new CustomEvent(PLAN_EVENT));
   } catch {}
 }
