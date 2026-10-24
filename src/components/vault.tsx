@@ -5,7 +5,8 @@ import { motion, AnimatePresence } from "motion/react";
 import { useRouter } from "next/navigation";
 import { GameArtwork } from "@/components/game-artwork";
 import { MuseumExperience } from "@/components/museum-experience";
-import { ArrowRight, ArrowUpRight, LibraryBig, LogIn, Search, Trophy, RefreshCw, Pause, Play, ChevronDown } from "lucide-react";
+import { HomeExperience } from "@/components/home-experience";
+import { ArrowUpRight, House, LibraryBig, GalleryVerticalEnd, LogIn, LogOut, Search, Trophy, RefreshCw, Pause, Play, ChevronDown, CircleUserRound } from "lucide-react";
 import { percentage, isCompleted, hours, type Game, type Player } from "@/lib/games";
 
 type Section = "inicio" | "biblioteca" | "museo";
@@ -191,26 +192,24 @@ export function Vault({ initialGames, player, isSteam, loadFailed }: { initialGa
 
   const open=(page:Section)=>{setSection(page);try { localStorage.setItem("platinum-vault:ultima-seccion",page); } catch {} window.history.replaceState(null,"",page==="inicio"?"/":"/?seccion="+page);window.scrollTo({top:0,behavior:"smooth"});};
   return <div className="site">
-    <header className="header">
-      <button className="logo" onClick={()=>open("inicio")}><span className="logo-icon"><Trophy size={22}/></span><span>PLATINUM<b>VAULT</b><small>THE COMPLETIONIST ARCHIVE</small></span></button>
-      <nav>{(["inicio","biblioteca","museo"] as Section[]).map((part,i)=><button className={section===part?"active":""} onClick={()=>open(part)} key={part}><sup>0{i+1}</sup>{part==="inicio"?"Inicio":part==="biblioteca"?"Biblioteca":"El museo"}</button>)}</nav>
-      {isSteam?<a className="steam-button" href="/api/auth/logout">{player.name} · Salir</a>:<a className="steam-button" href="/api/auth/steam"><LogIn size={16}/> Conectar Steam</a>}
+    <header className="header pv-topbar">
+      <button className="pv-brand" onClick={()=>open("inicio")} aria-label="Platinum Vault, ir al inicio">
+        <span className="pv-brand-icon"><Trophy size={26} strokeWidth={2}/></span>
+        <span className="pv-brand-name">PLATINUM<span>VAULT</span><small>TU ARCHIVO DE CONQUISTAS</small></span>
+      </button>
+      <nav className="pv-main-nav" aria-label="Navegación principal">
+        <button className={"pv-nav-tab "+(section==="inicio"?"active":"")} onClick={()=>open("inicio")} aria-current={section==="inicio"?"page":undefined}><House size={18}/> Inicio</button>
+        <button className={"pv-nav-tab "+(section==="biblioteca"?"active":"")} onClick={()=>open("biblioteca")} aria-current={section==="biblioteca"?"page":undefined}><LibraryBig size={18}/> Biblioteca</button>
+        <button className={"pv-nav-tab "+(section==="museo"?"active":"")} onClick={()=>open("museo")} aria-current={section==="museo"?"page":undefined}><GalleryVerticalEnd size={18}/> Mi museo</button>
+      </nav>
+      <div className="pv-top-actions">
+        {isSteam?<><span className="pv-account-name"><CircleUserRound size={18}/><span>{player.name}</span></span><a className="pv-logout" href="/api/auth/logout" title="Cerrar sesión en Platinum Vault" aria-label="Cerrar sesión"><LogOut size={19}/></a></>:
+          <a className="pv-login" href="/api/auth/steam"><LogIn size={17}/> Conectar Steam</a>}
+      </div>
     </header>
     <AnimatePresence mode="wait"><motion.main key={section} initial={{opacity:0,y:14}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-12}} transition={{duration:.35}}>
-    {section==="inicio"&&<>
-      <section className="hero">
-        <div className="hero-photo"/><div className="hero-cover"/>
-        <div className="hero-content"><span className="eyebrow">✳ &nbsp; EL ARCHIVO DE TUS GRANDES CONQUISTAS</span><h1>NO SOLO<br/>LOS JUEGAS.<br/><em>LOS CONQUISTAS.</em></h1><p>Cada historia terminada merece un lugar en la memoria. Reúne tu biblioteca, celebra tus juegos al 100 % y construye el legado de todo lo que has superado.</p><div className="hero-actions"><button className="primary" onClick={()=>open("museo")}>Entrar al museo <ArrowUpRight size={18}/></button><button className="secondary" onClick={()=>open("biblioteca")}>Explorar biblioteca <ArrowRight size={18}/></button></div><span className="hero-label">PLATINUM VAULT — EDICIÓN DE EXPLORACIÓN / 001</span></div>
-      </section>
-      <div className="demo-banner">✳ &nbsp; {isSteam?"CONECTADO CON STEAM — Los logros se analizan automáticamente y el museo se actualiza al detectar juegos completos.":loadFailed?"No se pudo cargar Steam. Se muestran datos de ejemplo.":"EDICIÓN DEMOSTRATIVA — Los juegos y estadísticas son ejemplos, no datos de tu cuenta."}</div>
-      <section className="stats"><div><span>01 / EL CATÁLOGO</span><strong>{games.length.toString().padStart(2,"0")}</strong><small>JUEGOS EN EL ARCHIVO</small></div><div><span>02 / LA COLECCIÓN</span><strong>{completed.length.toString().padStart(2,"0")}</strong><small>OBRAS COMPLETADAS</small></div><div><span>03 / TIEMPO INVERTIDO</span><strong>{hours(games.reduce((total,g)=>total+g.playtime,0))}<i>h</i></strong><small>HORAS DE HISTORIA</small></div><div className="quote">«La verdadera recompensa<br/>es el camino recorrido.»<span>— EL ESPÍRITU COMPLETISTA</span></div></section>
-      <section className="section"><div className="section-title"><div><span className="eyebrow">✳ &nbsp; SALA 01 / LAS PIEZAS DESTACADAS</span><h2>El salón de los inmortales</h2></div><p>Una colección que cuenta historias. Cada juego completado es una pieza que se añade a tu legado.</p></div>
-      <div className="featured">{completed.slice(0,3).map((game,i)=><button className="feature" onClick={()=>openGame(game)} key={game.id}><GameArtwork id={game.id} name={game.name} iconHash={game.iconHash}/><span className="feature-shade"/><span className="feature-number">N.º {String(i+1).padStart(2,"0")}</span><span className="feature-copy"><small>COLECCIÓN COMPLETADA</small><strong>{game.name}</strong><span>Explorar pieza <ArrowUpRight size={17}/></span></span></button>)}</div>
-      <div className="section-bottom"><button onClick={()=>open("museo")}>EXPLORAR TODO EL MUSEO <ArrowUpRight size={18}/></button><span>{completed.length} PIEZAS EN EXPOSICIÓN</span></div></section>
-      <div className="manifesto"><span className="manifesto-symbol"><Trophy size={95} strokeWidth={.7}/></span><div><span className="eyebrow">UNA FILOSOFÍA</span><h2>EL FINAL DE UN JUEGO<br/>ES EL PRINCIPIO <em>DE SU LEGADO.</em></h2><p>Tu biblioteca no es una lista. Es el mapa de tus aventuras, los desafíos que superaste y los que todavía te esperan.</p></div><button onClick={()=>open("biblioteca")} aria-label="Abrir biblioteca"><ArrowUpRight size={26}/></button></div>
-      <section className="section"><div className="section-title"><div><span className="eyebrow">✳ &nbsp; SALA 02 / EN PROGRESO</span><h2>Todavía queda camino</h2></div><p>Retoma tus aventuras pendientes y descubre cuánto falta para llegar al final.</p></div><div className="game-grid">{unfinished.slice(0,5).map(game=><GameCard game={game} onOpen={openGame} key={game.id}/>)}</div><div className="section-bottom"><button onClick={()=>open("biblioteca")}>VER LA BIBLIOTECA COMPLETA <ArrowUpRight size={18}/></button></div></section>
-    </>}
-    {section==="biblioteca"&&<div className="inner-page"><div className="page-hero"><span className="eyebrow">ÍNDICE / 02 — BIBLIOTECA</span><h1>CADA MUNDO.<br/><em>UNA HISTORIA.</em></h1><p>Todo lo que has explorado, en un solo lugar. Busca, filtra y descubre qué aventuras esperan su última conquista.</p><LibraryBig className="page-watermark" size={190} strokeWidth={.4}/></div>{isSteam&&<div className="sync-actions">
+    {section==="inicio"&&<HomeExperience games={games} steamId={player.steamId} isSteam={isSteam} openGame={openGame} navigate={(destination)=>open(destination)}/>}
+        {section==="biblioteca"&&<div className="inner-page"><div className="page-hero"><span className="eyebrow">ÍNDICE / 02 — BIBLIOTECA</span><h1>CADA MUNDO.<br/><em>UNA HISTORIA.</em></h1><p>Todo lo que has explorado, en un solo lugar. Busca, filtra y descubre qué aventuras esperan su última conquista.</p><LibraryBig className="page-watermark" size={190} strokeWidth={.4}/></div>{isSteam&&<div className="sync-actions">
         <div className="sync-copy">
           <span className={"sync-indicator " + syncState}><RefreshCw size={18}/></span>
           <div>
