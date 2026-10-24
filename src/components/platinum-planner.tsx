@@ -5,12 +5,12 @@ import Link from "next/link";
 import { AnimatePresence, motion } from "motion/react";
 import {
   ArrowLeft, ArrowRight, ArrowUpRight, BookOpenCheck, CheckCircle2, CirclePause,
-  ClipboardList, Flame, Gamepad2, Plus, Search, Target, Trash2, Trophy, X,
+  ClipboardList, Plus, Search, Target, Trash2, X,
 } from "lucide-react";
 import { GameArtwork } from "@/components/game-artwork";
 import { hours, isCompleted, percentage, type Game } from "@/lib/games";
 import {
-  addToPlanner, PLAN_EVENT, plannerKey, priorityOrder, readPlanner, savePlanner,
+  addToPlanner, priorityOrder, readPlanner, savePlanner,
   type PlanPriority, type PlannedGame, type PlanStatus,
 } from "@/lib/planner";
 
@@ -24,14 +24,30 @@ type Props = { games: Game[]; steamId: string; isSteam: boolean };
 export function PlatinumPlanner({games,steamId,isSteam}:Props) {
   const [entries,setEntries] = useState<PlannedGame[]>([]);
   const [ready,setReady] = useState(false);
+  const [cached,setCached] = useState<Record<number,Pick<Game,"unlocked"|"total"|"completedAt">>>({});
   const [search,setSearch] = useState("");
   const [pick,setPick] = useState(false);
   const [pickSearch,setPickSearch] = useState("");
   const [statusFilter,setStatusFilter] = useState("todos");
   const [sort,setSort] = useState("prioridad");
-  const gameMap = useMemo(()=>new Map(games.map((g)=>[g.id,g])),[games]);
+  const visibleGames=useMemo(()=>games.map((game)=>({...game,...(cached[game.id]??{})})),[games,cached]);
+  const gameMap = useMemo(()=>new Map(visibleGames.map((g)=>[g.id,g])),[visibleGames]);
 
   useEffect(()=>{
+    try {
+      const raw = localStorage.getItem("platinum-vault:logros:v2:"+steamId);
+      if(raw){
+        const stored=JSON.parse(raw) as {savedAt?:number;snapshots?:Record<string,Game>};
+        if(stored.savedAt && Date.now()-stored.savedAt<12*60*60*1000 && stored.snapshots){
+          const fresh:Record<number,Pick<Game,"unlocked"|"total"|"completedAt">>={};
+          for(const game of games){
+            const snap=stored.snapshots[String(game.id)];
+            if(snap)fresh[game.id]={unlocked:snap.unlocked,total:snap.total,completedAt:snap.completedAt};
+          }
+          setCached(fresh);
+        }
+      }
+    }catch{}
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setEntries(readPlanner(steamId,games));
     // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -52,11 +68,11 @@ export function PlatinumPlanner({games,steamId,isSteam}:Props) {
       return priorityOrder[a.entry.priority]-priorityOrder[b.entry.priority] ||
         ((percentage(b.game)??-1)-(percentage(a.game)??-1));
     }),[entries,gameMap,search,statusFilter,sort]);
-  const candidates=useMemo(()=>games
+  const candidates=useMemo(()=>visibleGames
     .filter((g)=>!isCompleted(g)&&!entries.some((entry)=>entry.appId===g.id))
     .filter((g)=>g.name.toLocaleLowerCase("es").includes(pickSearch.toLocaleLowerCase("es")))
-    .sort((a,b)=>a.name.localeCompare(b.name,"es")).slice(0,60),[games,entries,pickSearch]);
-  const completedCount=entries.filter((row)=>isCompleted(gameMap.get(row.appId) as Game)).length;
+    .sort((a,b)=>a.name.localeCompare(b.name,"es")).slice(0,60),[visibleGames,entries,pickSearch]);
+  const completedCount=entries.filter((row)=>{const g=gameMap.get(row.appId);return g?isCompleted(g):false;}).length;
 
   return <main className="plan-page">
     <div className="plan-topline"><Link href="/?seccion=inicio"><ArrowLeft size={16}/> Volver al inicio</Link><span>PLATINUM VAULT / PLANIFICACIÓN PERSONAL</span></div>
