@@ -2,6 +2,8 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
+import Link from "next/link";
+import { addToPlanner, readPlanner, savePlanner, PLAN_EVENT } from "@/lib/planner";
 import {
   ArrowRight, ArrowUpRight, Check, ChevronLeft, ChevronRight,
   CircleCheck, Crown, Flame, LibraryBig, ListTodo, Pencil, Plus,
@@ -156,6 +158,12 @@ export function HomeExperience({games,steamId,isSteam,loadFailed,openGame,naviga
     .sort((a,b)=>(percentage(b)??0)-(percentage(a)??0) || a.name.localeCompare(b.name,"es"))
     .slice(0,MAX_ITEMS),[unfinished]);
 
+  useEffect(()=>{
+    const onPlannerUpdate=()=>setWishlist(readIds(wishlistKey)??[]);
+    window.addEventListener(PLAN_EVENT,onPlannerUpdate);
+    return ()=>window.removeEventListener(PLAN_EVENT,onPlannerUpdate);
+  },[wishlistKey]);
+
   const wishlisted = useMemo(()=>{
     const byId = new Map(games.map((game)=>[game.id,game]));
     return wishlist.map((id)=>byId.get(id)).filter((game):game is Game=>Boolean(game)&&!isCompleted(game));
@@ -166,7 +174,14 @@ export function HomeExperience({games,steamId,isSteam,loadFailed,openGame,naviga
 
   function savePicker(ids:number[]) {
     if(picker==="showcase") {setShowcaseSaved(ids);writeIds(showcaseKey,ids);}
-    if(picker==="wishlist") {setWishlist(ids);writeIds(wishlistKey,ids);}
+    if(picker==="wishlist") {
+      const previous=readPlanner(key,games);
+      const next=ids.reduce((items,id)=>addToPlanner(items,id),previous);
+      savePlanner(key,next);
+      setWishlist(ids);
+      // Esta selección ordenada de cinco juegos es independiente de la lista completa.
+      writeIds(wishlistKey,ids);
+    }
     setPicker(null);
   }
   function chooseView(view:PriorityView){
@@ -239,7 +254,7 @@ export function HomeExperience({games,steamId,isSteam,loadFailed,openGame,naviga
       </div>:<div className="pv-section-empty pv-priority-empty"><Target size={31}/><h3>{priorityView==="lista"?"Tu próxima aventura la decides tú.":"Todavía no hay progresos para ordenar."}</h3><p>{priorityView==="lista"?"Añade hasta cinco juegos de tu biblioteca, aunque aún no hayas conseguido sus primeros logros.":"Los juegos más cercanos aparecerán después de consultar los logros de Steam."}</p>
         {priorityView==="lista"&&<button className="pv-action" onClick={()=>setPicker("wishlist")}>Crear mi lista <Plus size={16}/></button>}
       </div>}
-      <div className="pv-home-section-bottom"><span>{priorityView==="lista"?"Tu lista es personal y se guarda en este navegador.":"Clasificado por porcentaje de logros conocido, no por dificultad."}</span><button onClick={()=>navigate("biblioteca")}>Explorar biblioteca <ArrowUpRight size={17}/></button></div>
+      <div className="pv-home-section-bottom"><span>{priorityView==="lista"?"Tus cinco prioridades se pueden ampliar en el planificador completo.":"Clasificado por porcentaje de logros conocido, no por dificultad."}</span><Link className="pv-planner-cta" href="/planificador">Abrir mi planificador <ArrowUpRight size={17}/></Link></div>
     </section>
     <section className="pv-finale"><div><span className="pv-kicker"><Sparkles size={16}/> LA COLECCIÓN CONTINÚA</span><h2>Hay historias que se terminan.<br/><span>Y otras que se recuerdan para siempre.</span></h2></div><button onClick={()=>navigate("museo")} className="pv-action">Entrar al museo <ArrowRight size={17}/></button></section>
 
