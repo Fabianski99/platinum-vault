@@ -8,7 +8,7 @@ import { GameDetail } from "@/components/game-detail";
 export default async function GamePage({ params, searchParams }: { params: Promise<{ appId: string }>; searchParams: Promise<{ desde?: string }> }) {
   const { appId: raw } = await params;
   const { desde } = await searchParams;
-  const returnSection = desde === "museo" || desde === "inicio" ? desde : "biblioteca";
+  const returnSection = desde === "museo" || desde === "inicio" || desde === "planificador" ? desde : "biblioteca";
   if (!/^\d{1,10}$/.test(raw)) notFound();
   const id = Number(raw);
   if (!Number.isSafeInteger(id) || id < 1 || id > 4294967295) notFound();
