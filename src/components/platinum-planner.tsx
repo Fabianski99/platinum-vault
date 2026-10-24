@@ -44,6 +44,7 @@ export function PlatinumPlanner({games,steamId,isSteam}:Props) {
             const snap=stored.snapshots[String(game.id)];
             if(snap)fresh[game.id]={unlocked:snap.unlocked,total:snap.total,completedAt:snap.completedAt};
           }
+          // eslint-disable-next-line react-hooks/set-state-in-effect
           setCached(fresh);
         }
       }
