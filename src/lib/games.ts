@@ -6,6 +6,8 @@ export type Game = {
   total: number | null;
   status?: "ready" | "unavailable" | "error";
   iconHash?: string;
+  /** True when Steam flags this application as a family-borrowed license. */
+  familyShared?: boolean;
   completedAt?: number;
   lastPlayed?: number;
   genre?: string;
