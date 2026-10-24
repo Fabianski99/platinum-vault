@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import {
-  ArrowRight, ArrowUpRight, Check, ChevronDown, ChevronLeft, ChevronRight,
+  ArrowRight, ArrowUpRight, Check, ChevronLeft, ChevronRight,
   CircleCheck, Crown, Flame, LibraryBig, ListTodo, Pencil, Plus,
   Search, SlidersHorizontal, Sparkles, Target, Trophy, X,
 } from "lucide-react";
@@ -16,6 +16,7 @@ type Props = {
   games: Game[];
   steamId?: string;
   isSteam: boolean;
+  loadFailed: boolean;
   openGame: (game: Game) => void;
   navigate: (destination: "biblioteca" | "museo") => void;
 };
@@ -101,7 +102,7 @@ function CollectionPicker({
       </div>
       <label className="pv-picker-search"><Search size={18}/><input autoFocus value={search} onChange={(event)=>setSearch(event.target.value)} placeholder="Buscar juegos por nombre..." /></label>
       <div className="pv-picker-list">
-        {filtered.map((game) => {
+        {filtered.slice(0, 60).map((game) => {
           const index = draft.indexOf(game.id);
           return <button key={game.id} className={"pv-picker-game "+(index !== -1 ? "chosen" : "")}
             aria-pressed={index !== -1} disabled={index===-1 && draft.length>=MAX_ITEMS} onClick={()=>choose(game.id)}>
@@ -111,6 +112,7 @@ function CollectionPicker({
           </button>;
         })}
         {filtered.length === 0 && <div className="pv-picker-empty">No encontramos juegos con ese nombre.</div>}
+        {filtered.length > 60 && <div className="pv-picker-tip">Mostrando los primeros 60 resultados. Escribe el nombre de otro juego para encontrarlo.</div>}
       </div>
       <div className="pv-picker-bottom"><span>{draft.length} / {MAX_ITEMS} seleccionados</span>
         <div><button className="pv-ghost" onClick={onClose}>Cancelar</button><button className="pv-action" onClick={()=>onSave(draft)}>Guardar selección <Check size={16}/></button></div>
@@ -119,7 +121,7 @@ function CollectionPicker({
   </motion.div>;
 }
 
-export function HomeExperience({games,steamId,isSteam,openGame,navigate}:Props) {
+export function HomeExperience({games,steamId,isSteam,loadFailed,openGame,navigate}:Props) {
   const key = steamId ?? "demo";
   const showcaseKey = "platinum-vault:inicio:destacados:v1:" + key;
   const wishlistKey = "platinum-vault:inicio:por-platinar:v1:" + key;
@@ -191,7 +193,7 @@ export function HomeExperience({games,steamId,isSteam,openGame,navigate}:Props) 
       </div>
     </section>
 
-    {!isSteam && <div className="pv-demo"><Sparkles size={16}/> {steamId?"Tu cuenta no está disponible en este momento.":"Estás explorando una colección de demostración. Conecta Steam para ver tus juegos."}</div>}
+    {!isSteam && <div className="pv-demo"><Sparkles size={16}/> {loadFailed?"Steam no pudo cargar la biblioteca. Se muestran datos de demostración.":"Estás explorando una colección de demostración. Conecta Steam para ver tus juegos."}</div>}
 
     <section className="pv-pulse" aria-label="Resumen de tu colección">
       <div><span>Juegos en la biblioteca</span><strong>{games.length}</strong><LibraryBig size={21}/></div>
@@ -242,7 +244,7 @@ export function HomeExperience({games,steamId,isSteam,openGame,navigate}:Props) 
     <section className="pv-finale"><div><span className="pv-kicker"><Sparkles size={16}/> LA COLECCIÓN CONTINÚA</span><h2>Hay historias que se terminan.<br/><span>Y otras que se recuerdan para siempre.</span></h2></div><button onClick={()=>navigate("museo")} className="pv-action">Entrar al museo <ArrowRight size={17}/></button></section>
 
     <AnimatePresence>{picker && <CollectionPicker key={picker} kind={picker} games={picker==="showcase"?completed:unfinished}
-      selected={picker==="showcase" ? (showcaseSaved ?? showcased.map((game)=>game.id)) : wishlist}
+      selected={picker==="showcase" ? (showcaseSaved ?? showcased.map((game)=>game.id)) : wishlist.filter((id)=>unfinished.some((game)=>game.id===id))}
       onSave={savePicker} onClose={()=>setPicker(null)}/>}</AnimatePresence>
   </div>;
 }
