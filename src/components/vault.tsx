@@ -61,7 +61,6 @@ export function Vault({ initialGames, player, isSteam, loadFailed }: { initialGa
     return () => window.clearTimeout(timeout);
   }, [section]);
   const completed=games.filter(isCompleted);
-  const unfinished=games.filter(g=>!isCompleted(g));
   const shown = useMemo(() => {
     const filtered = games.filter((game) => game.name.toLocaleLowerCase("es").includes(query.toLocaleLowerCase("es")))
       .filter((game) => filter === "todos"
