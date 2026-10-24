@@ -52,6 +52,7 @@ export function PlatinumPlanner({games,steamId,isSteam}:Props) {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setEntries(readPlanner(steamId,games));
     // eslint-disable-next-line react-hooks/set-state-in-effect
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setReady(true);
   },[steamId,games]);
 
