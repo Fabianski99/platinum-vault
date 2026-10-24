@@ -15,6 +15,8 @@ Una biblioteca de Steam y un museo personal de juegos completados al 100 %, con 
 ### Biblioteca y conexión
 
 - Inicio de sesión con Steam, horas jugadas, biblioteca real y progreso de logros.
+- Se solicita `include_family_licenses=true` en `GetOwnedGames` para recuperar títulos jugados con Steam Families cuando Steam los exponga. Los juegos con `family_shared` aparecen identificados y disponen de un filtro **Compartidos**. Los platinos de préstamo familiar cuentan igual que los propios.
+- Si un título prestado históricamente ya no aparece en la respuesta de Steam, esta integración aún no puede recuperarlo automáticamente: queda como limitación pendiente.
 - Sincronización automática por lotes, pausa y reintento.
 - Búsqueda, estado de logros y clasificación por actividad, nombre, horas y progreso.
 - Búsqueda, filtros y orden de la biblioteca guardados localmente.
@@ -63,6 +65,17 @@ npm run build
 \`\`\`
 
 Las claves de Steam permanecen en el servidor. No subas \`.env.local\` ni secretos a GitHub.
+
+## Recuperar cambios locales si Git bloquea la actualización
+
+Si `git pull` indica que se sobrescribirían archivos modificados, no fuerces el cambio. Guarda un respaldo reversible:
+
+```powershell
+git stash push -u -m "Respaldo local antes de actualizar Platinum Vault"
+git pull origin main
+```
+
+No ejecutes `git stash pop` de inmediato: revisa primero qué modificaciones guardaste con `git stash show -p`. El respaldo permanece disponible para comparar y recuperar archivos de forma selectiva.
 
 ## Pendiente
 
