@@ -10,7 +10,7 @@ import {
   Search, SlidersHorizontal, Sparkles, Target, Trophy, X,
 } from "lucide-react";
 import { GameArtwork } from "@/components/game-artwork";
-import { completionDate, hours, isCompleted, percentage, type Game } from "@/lib/games";
+import { hours, isCompleted, percentage, type Game } from "@/lib/games";
 
 type PickerKind = "showcase" | "wishlist";
 type PriorityView = "cercanos" | "lista";
