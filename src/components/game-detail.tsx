@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { motion } from "motion/react";
-import { ArrowLeft, ArrowUpRight, Award, CalendarDays, Check, ExternalLink, Filter, Gamepad2, LockKeyhole, Search, Trophy, Eye, EyeOff, Clock3, Target, Sparkles } from "lucide-react";
+import { ArrowLeft, ArrowUpRight, Award, CalendarDays, Check, ExternalLink, Filter, Gamepad2, LockKeyhole, Search, Trophy, Eye, EyeOff, Clock3, Target, Sparkles, BookOpenCheck } from "lucide-react";
 import type { Game } from "@/lib/games";
 import { completionDate, hours, isCompleted, percentage } from "@/lib/games";
 import type { AchievementDetail, GameAchievementData } from "@/lib/achievement";
@@ -213,8 +213,8 @@ export function GameDetail({ game, connected, returnSection = "biblioteca" }: Pr
       </>}
       {connected && data?.available && <section className="guide-foundation">
         <div><span className="eyebrow">04 / SIGUIENTE ETAPA</span><h2>Preparando tu futura guía</h2>
-          <p>Conocemos tus {pending.length} logros pendientes. Para establecer una ruta válida habrá que verificar cuáles son perdibles y cuáles requieren dificultad, NG+, DLC o multijugador. Estas condiciones no se deducen automáticamente de Steam.</p>
-        </div><span className="guide-foundation-status">REQUISITOS PENDIENTES DE VERIFICACIÓN</span>
+          <p>Conocemos tus {pending.length} logros pendientes. El primer prototipo de rutas verificadas ya está disponible para Watch Dogs 2. Los demás juegos seguirán incorporándose después de revisar sus requisitos, no solo por sus descripciones en Steam.</p>
+        </div>{game.id===447040?<Link className="guide-foundation-link" href="/guias/447040"><BookOpenCheck size={17}/> Abrir guía personalizada <ArrowUpRight size={16}/></Link>:<span className="guide-foundation-status">GUÍA EN PREPARACIÓN PARA ESTE JUEGO</span>}
       </section>}
     </section>
     <footer className="game-detail-footer"><Link href="/?seccion=museo"><Trophy size={16}/> Visitar el museo</Link><span>PLATINUM VAULT · ARCHIVO PERSONAL</span></footer>
