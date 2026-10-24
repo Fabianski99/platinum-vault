@@ -10,6 +10,17 @@ Una biblioteca de Steam y un museo personal de juegos completados al 100 %, con 
 - Steam OpenID y Steam Web API.
 - Supabase/PostgreSQL **reservados para una etapa futura**.
 
+## Identidad visual y portada personalizable
+
+La segunda versión de la interfaz utiliza una navegación con iconos y nombres claros, tipografía más expresiva y una paleta grafito, coral, azul hielo y lima suave (sin luces RGB). El inicio ya no muestra juegos arbitrarios.
+
+- **Muro de leyendas:** permite elegir y ordenar manualmente hasta **5 juegos completados al 100 %**. Si no hay una selección guardada, muestra provisionalmente los cinco últimos completados detectados. El selector permite añadir, quitar y cambiar posiciones.
+- **Siguiente 100 %:** alterna entre «Cerca del 100 %», calculado según el porcentaje real de logros conocidos, y «Mi lista de platinos», donde se pueden guardar hasta **5 juegos pendientes** de cualquier porcentaje.
+- El inicio utiliza el mismo SteamID que la biblioteca, por lo que las preferencias no se mezclan entre cuentas en un mismo navegador. **La selección se guarda en localStorage**, aún no en Supabase.
+- Se conserva la biblioteca, los filtros, las fichas individuales y el museo con sus recorridos, cronología y favoritos.
+
+No hay integración de base de datos ni despliegue nuevo en esta etapa.
+
 ## Funciones actuales
 
 ### Biblioteca y conexión
