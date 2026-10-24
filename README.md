@@ -88,6 +88,29 @@ git pull origin main
 
 No ejecutes `git stash pop` de inmediato: revisa primero qué modificaciones guardaste con `git stash show -p`. El respaldo permanece disponible para comparar y recuperar archivos de forma selectiva.
 
+## Planificador de platinos (sin base de datos)
+
+La ruta `/planificador` permite añadir juegos de la biblioteca sin limitarse a cinco, asignarles estado (por empezar, en progreso o pausado), prioridad, notas y consultar el progreso de Steam. Si existe una selección anterior de cinco juegos pendientes, se importa una vez al planificador.
+
+El inicio conserva una selección de cinco objetivos; el planificador permite organizar un número mayor. Las preferencias se almacenan en `localStorage` y se identifican por SteamID. Para mostrar progreso, se reutiliza la caché de logros de la biblioteca cuando existe. En un dispositivo nuevo, entra antes a la biblioteca para sincronizar los logros.
+
+## Primera guía personalizada
+
+La ruta `/guias/447040` corresponde a **Watch Dogs 2**. Consulta sus logros reales para la cuenta conectada y clasifica las entradas reconocidas (inglés y español) en historia, operaciones secundarias, limpieza, DLC y multijugador.
+
+- Las etapas se ordenan según si la historia ya está completada y si el usuario quiere dejar el multijugador para el final.
+- Los logros que Steam informa como conseguidos se distinguen de los pendientes y se pueden ocultar.
+- Un pequeño listado de preparativos puede marcarse manualmente; eso no cambia los logros de Steam.
+- Los logros no reconocidos van a «Por clasificar», sin requisitos inventados.
+- Se indican los requisitos generales comprobados: sin logros perdibles conocidos, sin dificultad obligatoria y sin NG+, con contenido online y expansiones.
+- Se aportan fuentes consultables y se explican las limitaciones del prototipo.
+
+Las etiquetas verificadas están en `src/lib/watch-dogs-guide.ts`. El modelo para futuras guías sigue en `src/lib/guide-schema.ts`. Aún no se generan guías automáticas para otros juegos ni se predice el tiempo real restante.
+
+### Portadas
+
+**Se mantiene el sistema actual de portadas**: arte de Steam en diferentes formatos y una cubierta propia cuando no hay imagen adecuada. No se agregan imágenes arbitrarias de Internet ni se amplían iconos de baja calidad como carátulas; esa sería una regresión visual.
+
 ## Pendiente
 
 - Validar visualmente la galería, los fallback y los logros con la biblioteca real.
