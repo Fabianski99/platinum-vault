@@ -208,7 +208,7 @@ export function Vault({ initialGames, player, isSteam, loadFailed }: { initialGa
       </div>
     </header>
     <AnimatePresence mode="wait"><motion.main key={section} initial={{opacity:0,y:14}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-12}} transition={{duration:.35}}>
-    {section==="inicio"&&<HomeExperience games={games} steamId={player.steamId} isSteam={isSteam} openGame={openGame} navigate={(destination)=>open(destination)}/>}
+    {section==="inicio"&&<HomeExperience games={games} steamId={player.steamId} isSteam={isSteam} loadFailed={loadFailed} openGame={openGame} navigate={(destination)=>open(destination)}/>}
         {section==="biblioteca"&&<div className="inner-page"><div className="page-hero"><span className="eyebrow">ÍNDICE / 02 — BIBLIOTECA</span><h1>CADA MUNDO.<br/><em>UNA HISTORIA.</em></h1><p>Todo lo que has explorado, en un solo lugar. Busca, filtra y descubre qué aventuras esperan su última conquista.</p><LibraryBig className="page-watermark" size={190} strokeWidth={.4}/></div>{isSteam&&<div className="sync-actions">
         <div className="sync-copy">
           <span className={"sync-indicator " + syncState}><RefreshCw size={18}/></span>
