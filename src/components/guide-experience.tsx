@@ -46,6 +46,7 @@ function useSavedGuideSettings(key: string) {
         setHasDlc(stored.hasDlc!==false);
       }
     }catch{}
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setLoaded(true);
   },[key]);
   useEffect(()=>{
