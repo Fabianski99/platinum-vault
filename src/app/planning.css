@@ -1,0 +1,181 @@
+/* Planificador y guías: continúan la identidad de Platinum Vault */
+.plan-page,.guide-page{min-height:100vh;background:#0d1524;color:#f3f7fb;font-family:var(--font-geist-sans),Arial,sans-serif}
+.plan-topline,.guide-nav{min-height:65px;display:flex;align-items:center;justify-content:space-between;gap:18px;padding:15px 5%;background:#101c2b;border-bottom:1px solid #354c67;color:#b6c8dc;font-size:11px;letter-spacing:.07em}
+.plan-topline a,.guide-nav a{display:inline-flex;align-items:center;gap:9px;color:#fff;font-weight:800;letter-spacing:0}
+.plan-topline a:hover,.guide-nav a:hover{color:#ffae85}
+.plan-hero{position:relative;overflow:hidden;padding:84px 5% 0;background:radial-gradient(ellipse at 80% 12%,#496b84a8,transparent 50%),radial-gradient(ellipse at 8% 94%,#ff986e27,transparent 45%),#142033}
+.plan-hero::after{content:"PV";pointer-events:none;position:absolute;right:5%;top:20px;font-size:clamp(170px,21vw,390px);font-weight:950;letter-spacing:-.13em;color:#e3f5fa0a;line-height:1}
+.plan-kicker,.guide-kicker{display:inline-flex;align-items:center;gap:9px;font-size:11px;font-weight:900;letter-spacing:.14em;color:#cbec8e}
+.plan-hero h1{font-size:clamp(47px,5.8vw,94px);letter-spacing:-.075em;line-height:1.05;font-weight:950;margin:27px 0;max-width:920px;position:relative;z-index:1}
+.plan-hero h1 em,.guide-hero h1 em{font-style:normal;color:#ff986e}
+.plan-hero p{color:#c3d0e0;font-size:15px;line-height:1.8;max-width:610px;position:relative}
+.plan-hero-actions{display:flex;flex-wrap:wrap;gap:12px;margin:30px 0 70px;position:relative;z-index:1}
+.plan-primary,.plan-guide-link,.plan-add,.guide-message a,.guide-message button,.guide-foundation-link{display:inline-flex;align-items:center;justify-content:center;gap:10px;padding:13px 18px;border-radius:10px;font-size:13px;font-weight:850;text-decoration:none}
+.plan-primary,.guide-message a,.guide-message button,.guide-foundation-link{background:#ff986e;border:1px solid #ff986e;color:#19202c}
+.plan-primary:hover,.guide-message a:hover{filter:brightness(1.1)}
+.plan-guide-link{border:1px solid #8190a7;color:#f0f5f7;background:#233149}
+.plan-metrics{position:relative;z-index:1;display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:#3a4b62;border-top:1px solid #3a4b62}
+.plan-metrics>div{background:#172336;padding:27px 24px;display:flex;flex-direction:column;gap:5px}
+.plan-metrics strong{font-size:40px;font-weight:900;letter-spacing:-.06em}
+.plan-metrics span{font-size:12px;color:#bacada}
+.plan-body{padding:73px 5% 100px}
+.plan-header{display:flex;justify-content:space-between;align-items:end;gap:18px;margin-bottom:24px}
+.plan-header h2,.guide-list-header h2{font-size:clamp(33px,3.6vw,56px);font-weight:900;letter-spacing:-.06em;margin:13px 0 0}
+.plan-add{color:#fcf9f7;background:#25374d;border:1px solid #7589a4}
+.plan-controls,.guide-list-header>div:last-child{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:0 0 23px}
+.plan-search,.guide-search{display:flex;align-items:center;gap:10px;padding:13px 15px;background:#1d2c41;border:1px solid #536985;border-radius:10px;color:#bfcee0;flex:1;min-width:250px}
+.plan-search input,.guide-search input{color:#f5f8fc;background:none;border:0;outline:0;min-width:0;flex:1;font-size:13px}
+.plan-search input::placeholder,.guide-search input::placeholder{color:#a6bbce}
+.plan-controls select,.plan-card-edit select,.guide-settings select{background:#1e2e43;color:#f4f7fa;border:1px solid #526985;border-radius:9px;padding:12px 15px;font-size:12px}
+.plan-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
+.plan-card{display:flex;min-width:0;background:#18283e;border:1px solid #465c76;border-radius:15px;overflow:hidden;transition:border-color .2s}
+.plan-card:hover{border-color:#ff986e}
+.plan-card-finished{border-color:#7c9668}
+.plan-card-poster{width:138px;flex-shrink:0;display:block;background:#25354b}
+.plan-card-poster .game-artwork{height:100%}
+.plan-card-main{flex:1;min-width:0;padding:23px;display:flex;flex-direction:column;gap:13px}
+.plan-card-title{display:flex;align-items:start;justify-content:space-between;gap:12px}
+.plan-card-title>a{font-size:20px;line-height:1.22;font-weight:900;letter-spacing:-.04em;display:flex;align-items:start;gap:6px;overflow-wrap:anywhere}
+.plan-card-title>a svg{color:#ff986e;flex-shrink:0}
+.plan-card-title>span{font-size:10px;color:#cbec8e;white-space:nowrap;display:flex;gap:5px;align-items:center;font-weight:800}
+.plan-progress{height:6px;overflow:hidden;background:#3d516b;border-radius:9px}
+.plan-progress span{height:100%;display:block;border-radius:9px;background:linear-gradient(90deg,#c0e889,#e0f6b2)}
+.plan-card-small{display:flex;justify-content:space-between;gap:13px;color:#b7c7d9;font-size:11px}
+.plan-card-edit{display:flex;gap:10px;flex-wrap:wrap}
+.plan-card-edit label{display:flex;flex-direction:column;gap:7px;min-width:128px;flex:1;font-size:11px;color:#c3d2e3}
+.plan-card-edit select{width:100%;padding:9px}
+.plan-notes{display:flex;flex-direction:column;gap:9px;font-size:11px;color:#c1cfde}
+.plan-notes textarea{resize:vertical;min-height:65px;width:100%;background:#111e30;color:#f6f7f9;border:1px solid #405873;border-radius:9px;padding:11px 12px;font-size:12px;line-height:1.5}
+.plan-notes textarea:focus{outline:1px solid #ff986e}
+.plan-card-footer{display:flex;justify-content:space-between;gap:9px;align-items:center;flex-wrap:wrap;margin-top:auto}
+.plan-guide-button{display:flex;align-items:center;gap:7px;padding:10px 11px;background:#cdec8e;color:#111b29;border-radius:8px;font-size:11px;font-weight:850}
+.plan-guide-soon{display:flex;gap:7px;align-items:center;color:#9fb0c2;font-size:11px}
+.plan-remove{display:flex;gap:5px;align-items:center;border:0;background:transparent;color:#ffc1af;font-size:11px;padding:9px}
+.plan-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:13px;min-height:275px;border:1px dashed #62758e;border-radius:13px;background:#182538;text-align:center;padding:25px;color:#c6d4e2}
+.plan-empty h3{font-size:24px;margin:0;color:#fff}
+.plan-empty p{max-width:520px;line-height:1.6;font-size:13px}
+.plan-disclaimer{display:flex;align-items:center;gap:9px;color:#9fb4c9;font-size:11px;margin:22px 0;line-height:1.7}
+.plan-modal-backdrop{position:fixed;z-index:100;inset:0;background:#050c18df;backdrop-filter:blur(9px);display:grid;place-items:center;padding:15px}
+.plan-modal{display:flex;flex-direction:column;width:min(790px,100%);max-height:90vh;background:#1a2a40;border:1px solid #637995;border-radius:17px;padding:26px;box-shadow:0 24px 110px #000b}
+.plan-modal-top{display:flex;justify-content:space-between;gap:17px;margin-bottom:22px}
+.plan-modal-top h2{font-size:30px;font-weight:900;margin:10px 0;letter-spacing:-.05em}
+.plan-modal-top p{color:#bfccdc;font-size:12px;line-height:1.7}
+.plan-modal-top button{background:#30435b;border:1px solid #62768b;color:#fff;display:grid;place-items:center;width:39px;height:39px;border-radius:10px;flex-shrink:0}
+.plan-pick-results{overflow-y:auto;display:flex;flex-direction:column;gap:6px;margin-top:12px}
+.plan-pick-results>button{display:flex;align-items:center;gap:14px;border:1px solid #445a73;background:#23354a;border-radius:9px;color:#eff7fc;padding:8px;text-align:left}
+.plan-pick-results>button:hover{border-color:#cbea92}
+.plan-mini-art{width:49px;height:62px;flex-shrink:0}
+.plan-pick-results>button>div:nth-child(2){flex:1;min-width:0}
+.plan-pick-results strong{display:block;font-size:13px;white-space:nowrap;text-overflow:ellipsis;overflow:hidden}
+.plan-pick-results small{display:block;color:#b3c4d6;font-size:10px;margin-top:6px}
+.plan-pick-results>p{padding:30px;text-align:center;color:#c3d1db}
+.plan-load-error{min-height:70vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:13px;text-align:center;padding:30px}
+.plan-load-error h1{font-size:35px;font-weight:900}
+.plan-load-error p{color:#b5c7d9}
+.plan-load-error a{color:#ffae88;border-bottom:1px solid;padding:8px}
+/* Guía personalizada con etapas verificables */
+.guide-nav{background:#121d2e}
+.guide-hero{display:grid;grid-template-columns:190px minmax(0,1fr);gap:45px;padding:66px 5%;background:radial-gradient(ellipse at 82% 17%,#496b8770,transparent 55%),linear-gradient(130deg,#151f32,#23364d)}
+.guide-cover{height:280px;border:6px solid #3d5269;border-radius:12px;overflow:hidden;box-shadow:0 17px 65px #060a1266}
+.guide-hero h1{font-size:clamp(42px,5.5vw,84px);line-height:1.04;font-weight:950;letter-spacing:-.07em;margin:22px 0}
+.guide-hero p{font-size:14px;color:#c1d1e2;line-height:1.8;max-width:760px}
+.guide-hero-stats{display:flex;flex-wrap:wrap;gap:32px;margin-top:25px}
+.guide-hero-stats>div{display:flex;flex-direction:column;gap:6px}
+.guide-hero-stats strong{font-size:37px;font-weight:900}
+.guide-hero-stats span{font-size:11px;color:#bdcadc}
+.guide-content{padding:43px 5% 90px}
+.guide-validation{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:40px}
+.guide-validation>div{display:flex;flex-direction:column;gap:9px;border:1px solid #476079;background:#1c2b40;padding:17px;border-radius:11px}
+.guide-validation svg{color:#cbec8e}
+.guide-validation strong{font-size:13px}
+.guide-validation small{font-size:11px;color:#b7c7d8;line-height:1.6}
+.guide-message{min-height:310px;border:1px solid #586c87;border-radius:13px;background:#1a2940;display:flex;align-items:center;justify-content:center;flex-direction:column;text-align:center;gap:12px;padding:30px}
+.guide-message h2{font-size:26px;font-weight:900;margin:0}
+.guide-message p{color:#bacbdc;line-height:1.7;font-size:13px;max-width:600px}
+.guide-spin{animation:pv-spin 1.4s linear infinite}
+.guide-settings{display:flex;align-items:end;gap:20px;flex-wrap:wrap;border:1px solid #526982;border-radius:12px;padding:23px;background:#202f46}
+.guide-settings>div{margin-right:auto}
+.guide-settings h2{font-size:25px;letter-spacing:-.05em;margin:12px 0 0}
+.guide-settings>label{display:flex;flex-direction:column;gap:10px;font-size:12px;color:#d7e2ea}
+.guide-settings .guide-dlc{flex-direction:row;align-items:center;padding:11px 0;max-width:170px;line-height:1.5}
+.guide-dlc input,.guide-show-won input,.guide-manual input{accent-color:#cbec8e;width:16px;height:16px}
+.guide-progress{margin:27px 0 60px}
+.guide-progress>div:first-child{display:flex;justify-content:space-between;font-size:12px;gap:15px}
+.guide-progress>div:first-child strong{font-weight:900;font-size:17px}
+.guide-progress>div:nth-child(2){height:8px;background:#3b4c64;border-radius:10px;overflow:hidden;margin:15px 0}
+.guide-progress>div:nth-child(2)>span{display:block;height:100%;background:#cbec8e;border-radius:10px}
+.guide-progress>p{display:flex;gap:8px;align-items:center;color:#ffbf96;font-size:12px;margin-top:14px}
+.guide-list-header{display:flex;justify-content:space-between;align-items:end;flex-wrap:wrap;gap:18px;margin-bottom:22px}
+.guide-list-header>div:last-child{margin:0}
+.guide-show-won{display:flex;align-items:center;gap:8px;color:#c3d2e0;font-size:12px;white-space:nowrap}
+.guide-stages{display:flex;flex-direction:column;gap:22px}
+.guide-stage{background:#16263b;border:1px solid #405a74;border-radius:14px;overflow:hidden}
+.guide-stage-head{display:flex;align-items:start;gap:18px;padding:22px 24px;background:#203148}
+.guide-stage-num{display:grid;place-items:center;width:45px;height:45px;flex-shrink:0;background:#ff986e;color:#172131;font-size:17px;font-weight:950;border-radius:12px}
+.guide-stage-head>div{flex:1;min-width:0}
+.guide-stage-head h3{font-size:26px;font-weight:900;letter-spacing:-.05em;margin:4px 0 8px}
+.guide-stage-head p{font-size:12px;line-height:1.6;color:#beccdc;margin:0}
+.guide-stage-status{font-weight:850;color:#cbec8e;font-size:12px;white-space:nowrap}
+.guide-achievements{display:flex;flex-direction:column;gap:1px;background:#34495e}
+.guide-achievement{display:flex;gap:15px;align-items:flex-start;padding:20px 23px;background:#182a3f}
+.guide-achievement-won{background:#1e3440}
+.guide-achievement>span:first-child{flex:0 0 35px;color:#ffb38b}
+.guide-achievement-won>span:first-child{color:#cbec8e}
+.guide-achievement>div{flex:1;min-width:0}
+.guide-achievement strong{font-size:15px;font-weight:850}
+.guide-achievement p{font-size:12px;color:#b9cada;line-height:1.6;margin:7px 0}
+.guide-tip{font-size:11px;color:#cee998;line-height:1.6}
+.guide-labels{display:flex;gap:7px;flex-wrap:wrap;margin-top:11px}
+.guide-labels span{padding:5px 8px;border-radius:6px;font-size:10px;color:#c5d7e9;background:#2a3d53}
+.guide-achievement-state{font-size:10px;font-weight:850;color:#bdcddd;flex-shrink:0}
+.guide-stage-done,.guide-warning{padding:15px 23px;display:flex;align-items:center;gap:8px;color:#cceb96;font-size:12px}
+.guide-warning{color:#ffbe9a;background:#3b3041}
+.guide-manual{display:flex;flex-direction:column;gap:12px;padding:22px 24px;border-top:1px solid #3d526b;background:#1a2b3f}
+.guide-manual>strong{color:#fff;font-size:12px}
+.guide-manual label{display:flex;align-items:center;gap:10px;font-size:12px;color:#bcd0df}
+.guide-manual p{display:flex;gap:8px;align-items:center;color:#9ec2e2;font-size:11px;line-height:1.6}
+.guide-sources{margin-top:45px;padding:26px;background:#1a2b3d;border:1px solid #476077;border-radius:12px}
+.guide-sources h3{font-size:20px;font-weight:900}
+.guide-sources p{font-size:12px;line-height:1.8;color:#b9c8d9}
+.guide-sources>div{display:flex;gap:12px;flex-wrap:wrap;margin-top:17px}
+.guide-sources a{display:inline-flex;gap:6px;align-items:center;color:#b9ddf7;border-bottom:1px solid #557795;font-size:11px;padding:5px 0}
+.guide-foundation-link{flex-shrink:0;text-align:center}
+.pv-main-nav a.pv-nav-link{display:inline-flex;align-items:center;justify-content:center;gap:10px;padding:15px 20px;border:0;border-radius:12px;background:transparent;color:#b5c1cd;white-space:nowrap;font-size:14px;font-weight:720;height:auto}
+.pv-main-nav a.pv-nav-link:hover{background:#29354a;color:#fff}
+@media(max-width:1200px){.plan-list{grid-template-columns:1fr}.guide-validation{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:740px){
+ .plan-topline>span,.guide-nav>span{display:none}
+ .plan-hero{padding:55px 5% 0}
+ .plan-hero-actions{margin-bottom:50px}
+ .plan-metrics>div{padding:16px 10px}
+ .plan-metrics strong{font-size:30px}
+ .plan-metrics span{font-size:10px}
+ .plan-body{padding:50px 5%}
+ .plan-header{flex-direction:column;align-items:start}
+ .plan-controls{flex-direction:column;align-items:stretch}
+ .plan-controls select{width:100%}
+ .plan-card-poster{width:96px}
+ .plan-card-main{padding:15px;gap:10px}
+ .plan-card-title{flex-wrap:wrap}
+ .plan-card-title>a{font-size:17px}
+ .plan-card-edit{flex-direction:column}
+ .plan-card-small{flex-wrap:wrap}
+ .plan-modal{max-height:94vh;padding:17px}
+ .guide-hero{grid-template-columns:90px minmax(0,1fr);gap:19px;padding:45px 5%}
+ .guide-cover{height:145px;border-width:3px}
+ .guide-hero h1{font-size:clamp(30px,6vw,50px)}
+ .guide-hero p{font-size:12px}
+ .guide-validation{gap:9px}
+ .guide-validation>div{padding:12px}
+ .guide-settings{flex-direction:column;align-items:stretch}
+ .guide-settings select{width:100%}
+ .guide-stage-head{padding:18px 14px;gap:10px;flex-wrap:wrap}
+ .guide-stage-head h3{font-size:22px}
+ .guide-achievement{padding:15px 12px;gap:9px}
+ .guide-achievement-state{font-size:9px}
+ .guide-manual{padding:18px 14px}
+ .pv-main-nav a.pv-nav-link{font-size:12px;padding:12px 8px;gap:5px}
+ .pv-main-nav a.pv-nav-link svg{width:16px}
+}
+@media(max-width:420px){.plan-card{flex-direction:column}.plan-card-poster{height:140px;width:100%}.plan-card-poster .game-artwork img{object-position:center 35%}.guide-hero{grid-template-columns:1fr}.guide-cover{display:none}}
+@media(prefers-reduced-motion:reduce){.guide-spin{animation:none}}
