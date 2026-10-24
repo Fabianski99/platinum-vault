@@ -193,7 +193,7 @@ export function MuseumExperience({ games, onOpen, ownerKey }: Props) {
           <button className="museum-artwork-open" onClick={()=>onOpen(game)} aria-label={"Abrir ficha de "+game.name}><GameArtwork id={game.id} name={game.name} iconHash={game.iconHash}/><span className="museum-onhover">EXPLORAR OBRA <ArrowUpRight size={17}/></span></button>
           <button className={"museum-artwork-favorite "+(favorites.includes(game.id)?"hearted":"")} onClick={()=>toggleFavorite(game.id)} aria-label={favorites.includes(game.id)?"Quitar de favoritas":"Marcar favorita"}><Heart size={16} fill={favorites.includes(game.id)?"currentColor":"none"}/></button>
         </div>
-        <div className="museum-artwork-index">PIEZA Nº {String(i+1).padStart(3,"0")} <span><Trophy size={12}/> 100 %</span></div>
+        <div className="museum-artwork-index">PIEZA Nº {String(i+1).padStart(3,"0")} <span><Trophy size={12}/> 100 %</span></div>{game.familyShared && <span className="museum-family-label">JUGADO CON STEAM FAMILIES</span>}
         <h3>{game.name}</h3>
         <div className="museum-artwork-facts"><span>{game.total} logros</span><span>{hours(game.playtime)} horas</span></div>
         <div className="museum-artwork-date">{game.completedAt?"Último logro · "+completionDate(game.completedAt):"Fecha no disponible"}</div>
