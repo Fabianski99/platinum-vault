@@ -359,3 +359,9 @@ footer{border-top:1px solid #33392f;padding:45px 6%;display:flex;justify-content
  .achievement-skeleton-status{display:none}
 }
 @media(prefers-reduced-motion:reduce){.insight-loading-card>div,.insight-loading-card>span,.achievement-skeleton-icon,.achievement-skeleton-text i,.achievement-skeleton-status,.progress-checking::before{animation:none}}
+
+/* Licencias familiares detectadas por Steam */
+.family-shared-chip{position:absolute;top:11px;left:11px;z-index:2;border:1px solid #c3a873;background:#121913e6;color:#ecd29a;padding:6px 9px;font-size:10px;letter-spacing:.08em;box-shadow:0 3px 15px #0009}
+.detail-family-label{display:block;width:max-content;max-width:100%;font-size:10px;letter-spacing:.15em;margin-top:16px;border:1px solid #ab9468;padding:8px 12px;color:#dec592;background:#111713b0}
+.museum-family-label{display:inline-block;margin-top:10px;color:#ceb480;border:1px solid #5b5645;padding:5px 8px;font-size:9px;letter-spacing:.11em}
+@media(max-width:700px){.family-shared-chip{font-size:9px;padding:5px 6px;left:6px;top:6px}}
