@@ -102,6 +102,7 @@ export function GameDetail({ game, connected, returnSection = "biblioteca" }: Pr
       <div className="game-detail-hero-overlay"/>
       <div className="game-detail-hero-info">
         <span className="eyebrow">ARCHIVO INDIVIDUAL / STEAM {game.id}</span>
+        {game.familyShared && <span className="detail-family-label">JUEGO PRESTADO · STEAM FAMILIES</span>}
         <h1>{game.name}</h1>
         <p>{complete ? "Una obra conquistada. Cada logro cuenta la historia del camino que recorriste." : "Una aventura con capítulos por descubrir. Aquí queda registrado tu camino hacia el 100 %."}</p>
         <div className="game-detail-hero-stats">
