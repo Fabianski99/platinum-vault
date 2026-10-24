@@ -369,3 +369,7 @@ footer p,footer small{color:#a3b6c9}
 @media(prefers-reduced-motion:reduce){
  .pv-legend-card,.pv-priority-card,.pv-hero-current,.pv-action,.pv-login{transition:none}
 }
+
+/* La portada compuesta ya tiene el título sobreimpreso por la tarjeta destacada. */
+.pv-legend-card .game-artwork-caption{display:none}
+.pv-picker-tip{padding:14px;text-align:center;color:#b6c8d7;font-size:11px}
