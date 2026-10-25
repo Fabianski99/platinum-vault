@@ -5,7 +5,7 @@ import Link from "next/link";
 import { AnimatePresence, motion } from "motion/react";
 import {
   ArrowLeft, ArrowRight, ArrowUpRight, BookOpenCheck, CheckCircle2, CirclePause,
-  ClipboardList, Plus, Search, Target, Trash2, X,
+  Plus, Search, Target, Trash2, X,
 } from "lucide-react";
 import { GameArtwork } from "@/components/game-artwork";
 import { hours, isCompleted, percentage, type Game } from "@/lib/games";
@@ -82,7 +82,7 @@ export function PlatinumPlanner({games,steamId,isSteam}:Props) {
       <span className="plan-kicker"><Target size={16}/> TU PRÓXIMA CONQUISTA COMIENZA AQUÍ</span>
       <h1>No es una lista.<br/><em>Es tu próximo desafío.</em></h1>
       <p>Organiza los juegos que quieres completar, asigna prioridades, registra tu estrategia y sigue tus logros reales de Steam.</p>
-      <div className="plan-hero-actions"><button onClick={()=>setPick(true)} className="plan-primary"><Plus size={18}/> Añadir un juego</button><Link href="/guias/447040" className="plan-guide-link"><BookOpenCheck size={17}/> Probar guía Watch Dogs 2</Link></div>
+      <div className="plan-hero-actions"><button onClick={()=>setPick(true)} className="plan-primary"><Plus size={18}/> Añadir un juego</button><span className="plan-guide-link plan-guide-hint"><BookOpenCheck size={17}/> Guías para todos tus juegos</span></div>
       <div className="plan-metrics">
         <div><strong>{entries.length}</strong><span>En tu plan</span></div>
         <div><strong>{entries.filter((entry)=>entry.status==="en-curso").length}</strong><span>En progreso</span></div>
@@ -122,8 +122,7 @@ export function PlatinumPlanner({games,steamId,isSteam}:Props) {
                 onChange={(e)=>edit(game.id,{note:e.target.value})} rows={2}/>
             </label>
             <div className="plan-card-footer">
-              {game.id===447040?<Link href="/guias/447040" className="plan-guide-button"><BookOpenCheck size={16}/> Abrir mi guía personalizada <ArrowRight size={15}/></Link>
-              :<span className="plan-guide-soon"><ClipboardList size={15}/> Guía detallada aún no disponible</span>}
+              <Link href={"/guias/"+game.id} className="plan-guide-button"><BookOpenCheck size={16}/> {game.id===447040?"Abrir guía revisada":"Generar guía personalizable"} <ArrowRight size={15}/></Link>
               <button className="plan-remove" title="Quitar del plan" onClick={()=>persist(entries.filter((row)=>row.appId!==game.id))}><Trash2 size={16}/> Quitar</button>
             </div>
           </div>
