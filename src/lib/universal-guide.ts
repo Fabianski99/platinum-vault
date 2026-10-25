@@ -80,7 +80,7 @@ export function normalizedPreferences(raw: unknown): GuidePreferences {
   const overrides:Record<string,GuideOverride>={};
   if(data.overrides && typeof data.overrides==="object"){
     for(const [key,value] of Object.entries(data.overrides).slice(0,1000)){
-      if(!value || typeof value!=="object")continue;
+      if(!value || typeof value!=="object" || key==="__proto__" || key==="constructor" || key==="prototype")continue;
       const item=value as GuideOverride;
       const flags: Partial<Record<GuideFlagId,GuideFlag>>={};
       for(const id of FLAG_IDS){
@@ -106,8 +106,9 @@ export function normalizedPreferences(raw: unknown): GuidePreferences {
     difficulty:data.difficulty==="normal"||data.difficulty==="maxima"?data.difficulty:"sin-decidir",
     stageOrder:unique, orderCustomized:data.orderCustomized===true, showUnlocked:data.showUnlocked===true, revealHidden:data.revealHidden===true,
     overrides,
-    checks:data.checks && typeof data.checks==="object"
-      ? Object.fromEntries(Object.entries(data.checks).slice(0,1000).filter(([,v])=>typeof v==="boolean")) : {},
+    checks:data.checks && typeof data.checks==="object" && !Array.isArray(data.checks)
+      ? Object.fromEntries(Object.entries(data.checks).slice(0,1000).filter(([key,v])=>
+        typeof v==="boolean" && key!=="__proto__" && key!=="constructor")) : {},
   };
 }
 
