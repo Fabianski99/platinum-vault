@@ -94,18 +94,30 @@ La ruta `/planificador` permite añadir juegos de la biblioteca sin limitarse a 
 
 El inicio conserva una selección de cinco objetivos; el planificador permite organizar un número mayor. Las preferencias se almacenan en `localStorage` y se identifican por SteamID. Para mostrar progreso, se reutiliza la caché de logros de la biblioteca cuando existe. En un dispositivo nuevo, entra antes a la biblioteca para sincronizar los logros.
 
-## Primera guía personalizada
+## Generador universal de guías (sin Supabase)
 
-La ruta `/guias/447040` corresponde a **Watch Dogs 2**. Consulta sus logros reales para la cuenta conectada y clasifica las entradas reconocidas (inglés y español) en historia, operaciones secundarias, limpieza, DLC y multijugador.
+La ruta `/guias/APPID` funciona con **cualquier juego de la biblioteca que Steam exponga con logros accesibles**. No exige programar manualmente una guía por título.
 
-- Las etapas se ordenan según si la historia ya está completada y si el usuario quiere dejar el multijugador para el final.
-- Los logros que Steam informa como conseguidos se distinguen de los pendientes y se pueden ocultar.
-- Un pequeño listado de preparativos puede marcarse manualmente; eso no cambia los logros de Steam.
-- Los logros no reconocidos van a «Por clasificar», sin requisitos inventados.
-- Se indican los requisitos generales comprobados: sin logros perdibles conocidos, sin dificultad obligatoria y sin NG+, con contenido online y expansiones.
-- Se aportan fuentes consultables y se explican las limitaciones del prototipo.
+### Datos automáticos y límites
 
-Las etiquetas verificadas están en `src/lib/watch-dogs-guide.ts`. El modelo para futuras guías sigue en `src/lib/guide-schema.ts`. Aún no se generan guías automáticas para otros juegos ni se predice el tiempo real restante.
+1. La API de logros obtiene desbloqueos, imágenes, fechas y rarezas cuando Steam los proporciona.
+2. El motor de `src/lib/universal-guide.ts` construye una ruta inicial con historia, secundarias, limpieza, dificultad, NG+, DLC, multijugador y una etapa por clasificar.
+3. Solo se **sugieren** algunas clasificaciones cuando nombres o descripciones contienen términos explícitos. Estas sugerencias aparecen como *sin verificar*. Jamás se deduce automáticamente que un logro sea perdible.
+4. En **Watch Dogs 2 (447040)** se reutiliza su clasificación específica y fuentes documentadas.
+5. La API de contexto consulta metadatos públicos de la tienda (categorías y DLC asociados), cuando están disponibles. Esto no permite relacionar directamente un logro con un DLC.
+6. Se facilitan enlaces a los logros oficiales, guías de la comunidad y tienda para comprobar requisitos. **Todavía no existe un proveedor automático de investigación web ni un modelo IA conectado** que lea esas guías.
+
+### Personalización por juego y partida
+
+- Estado de la historia, preferencia online, disponibilidad de NG+, DLC y dificultad.
+- Reordenar las fases manualmente. Ese orden prevalece sobre las sugerencias.
+- Para cada logro: cambiar fase, marcar prioridad, indicar perdible/dificultad/NG+/online/DLC como «sí/no/sin verificar», añadir notas y enlace de referencia.
+- Checklist manual por fase, separado de los logros reales de Steam.
+- Filtros de pendientes, ocultos y sin verificar, y botón para actualizar Steam.
+- Almacenamiento por **SteamID y AppID** en el navegador. Exportar e importar ajustes específicos del juego en JSON.
+- Se intentan migrar las preferencias del antiguo prototipo de Watch Dogs 2.
+
+Se accede al generador desde cada ficha o desde el planificador. **La nueva guía no está automáticamente verificada u optimizada para cualquier juego**: la calidad mejora a medida que se confirman los requisitos.
 
 ### Portadas
 
