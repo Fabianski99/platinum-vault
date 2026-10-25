@@ -64,16 +64,33 @@ export function UniversalGuideExperience({appId,name,iconHash,steamId,connected}
   const [textSearch,setTextSearch]=useState("");
   const [editor,setEditor]=useState<string|null>(null);
   const [onlyUnknown,setOnlyUnknown]=useState(false);
+  const [importMessage,setImportMessage]=useState("");
   const isCurated=appId===GUIDE_APP_ID;
 
   useEffect(()=>{
     let stored:unknown=null;
-    try{stored=JSON.parse(localStorage.getItem(storageKey)??"null");}catch{}
+    try{
+      stored=JSON.parse(localStorage.getItem(storageKey)??"null");
+      if(!stored && appId===GUIDE_APP_ID){
+        const legacy=JSON.parse(localStorage.getItem("platinum-vault:guia:v1:"+steamId+":"+appId)??"null") as {
+          manual?:Record<string,boolean>;story?:string;multi?:string;hasDlc?:boolean;
+        }|null;
+        if(legacy){
+          stored={
+            ...defaultGuidePreferences(),
+            checks:legacy.manual??{},
+            story:legacy.story==="terminada"?"terminada":"en-curso",
+            online:legacy.multi==="adelantar"?"primero":"al-final",
+            dlc:legacy.hasDlc===false?"no":"si",
+          };
+        }
+      }
+    }catch{}
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setPrefs(normalizedPreferences(stored));
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setHydrated(true);
-  },[storageKey]);
+  },[storageKey,steamId,appId]);
 
   useEffect(()=>{
     if(!hydrated)return;
@@ -126,16 +143,16 @@ export function UniversalGuideExperience({appId,name,iconHash,steamId,connected}
   });
   const moveStage=(stage:GuideStageId,direction:-1|1)=>{
     setPrefs(current=>{
-      const values=[...current.stageOrder];const index=values.indexOf(stage);const next=index+direction;
+      const values=orderedStages(current);const index=values.indexOf(stage);const next=index+direction;
       if(index<0||next<0||next>=values.length)return current;
       [values[index],values[next]]=[values[next],values[index]];
-      return {...current,stageOrder:values};
+      return {...current,stageOrder:values,orderCustomized:true};
     });
   };
   const toggleCheck=(key:string,checked:boolean)=>setPrefs(current=>({
     ...current,checks:{...current.checks,[key]:checked},
   }));
-  const resetStageOrder=()=>update({stageOrder:[...STEAM_STAGE_ORDER]});
+  const resetStageOrder=()=>update({stageOrder:[...STEAM_STAGE_ORDER],orderCustomized:false});
   const exportGuide=()=>{
     const payload=JSON.stringify({
       format:"platinum-vault-guide-settings",version:1,appId,name,exportedAt:new Date().toISOString(),
@@ -145,6 +162,24 @@ export function UniversalGuideExperience({appId,name,iconHash,steamId,connected}
     const a=document.createElement("a");
     a.href=url;a.download="platinum-vault-guia-"+appId+".json";document.body.appendChild(a);a.click();
     a.remove();window.setTimeout(()=>URL.revokeObjectURL(url),1000);
+  };
+  const importGuide=async(event:React.ChangeEvent<HTMLInputElement>)=>{
+    const file=event.target.files?.[0];
+    event.target.value="";
+    if(!file)return;
+    if(file.size>512_000){setImportMessage("El archivo supera el límite de 500 KB.");return;}
+    try{
+      const raw=JSON.parse(await file.text()) as {
+        format?:string;version?:number;appId?:number;preferences?:unknown;
+      };
+      if(raw.format!=="platinum-vault-guide-settings"||raw.version!==1||raw.appId!==appId){
+        setImportMessage("Este archivo no corresponde a los ajustes de este juego.");return;
+      }
+      setPrefs(normalizedPreferences(raw.preferences));
+      setImportMessage("Ajustes importados correctamente y guardados en este navegador.");
+    }catch{
+      setImportMessage("No se pudo leer el archivo. Comprueba que sea JSON válido.");
+    }
   };
   const retry=()=>{setError("");setLoading(true);setRevision((value)=>value+1);};
   const editorEntry=classified.find((item)=>item.detail.apiName===editor)??null;
@@ -200,8 +235,11 @@ export function UniversalGuideExperience({appId,name,iconHash,steamId,connected}
 
           <section className="ug-roadmap">
             <div className="ug-roadmap-title"><div><span className="ug-kicker"><Flag size={15}/> TU RUTA</span><h2>Fases y objetivos</h2><p>{missing} logros pendientes, {flagged} marcados manualmente como perdibles.</p></div>
-              <div className="ug-toolbar-actions"><button onClick={retry}><RefreshCcw size={15}/> Actualizar Steam</button><button onClick={exportGuide}><Download size={15}/> Exportar mis ajustes</button></div>
+              <div className="ug-toolbar-actions"><button onClick={retry}><RefreshCcw size={15}/> Actualizar Steam</button><button onClick={exportGuide}><Download size={15}/> Exportar ajustes</button>
+                <label className="ug-file-import">Importar ajustes<input type="file" accept=".json,application/json" onChange={(event)=>void importGuide(event)}/></label>
+              </div>
             </div>
+            {importMessage&&<p className="ug-import-message" role="status">{importMessage}</p>}
             <div className="ug-progress"><span style={{width:(data.total?data.unlocked/data.total*100:0)+"%"}}/></div>
             <p className="ug-progress-label">{data.unlocked} / {data.total} logros verificados por Steam. Las casillas manuales no alteran esta cifra.</p>
             <div className="ug-toolbar">
@@ -210,7 +248,7 @@ export function UniversalGuideExperience({appId,name,iconHash,steamId,connected}
               <label><input type="checkbox" checked={prefs.revealHidden} onChange={e=>update({revealHidden:e.target.checked})}/> Revelar ocultos</label>
               <label><input type="checkbox" checked={onlyUnknown} onChange={e=>setOnlyUnknown(e.target.checked)}/> Solo sin verificar</label>
             </div>
-            <div className="ug-roadmap-note"><Sparkles size={17}/> Puedes mover las fases usando las flechas y abrir cualquier logro para corregir su clasificación. Los objetivos con evidencia incompleta aparecen señalados.</div>
+            <div className="ug-roadmap-note"><Sparkles size={17}/> Puedes mover las fases usando las flechas y abrir cualquier logro para corregir su clasificación. {prefs.orderCustomized?"El orden manual tiene prioridad sobre el orden sugerido.":"La ruta inicial se adapta a tus preferencias de partida."} Los objetivos con evidencia incompleta aparecen señalados.</div>
             <div className="ug-stages">
               {stages.map((id,index)=>{
                 const all=classified.filter(item=>item.stage===id);
