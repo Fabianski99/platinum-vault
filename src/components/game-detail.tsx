@@ -212,9 +212,9 @@ export function GameDetail({ game, connected, returnSection = "biblioteca" }: Pr
         </div>
       </>}
       {connected && data?.available && <section className="guide-foundation">
-        <div><span className="eyebrow">04 / SIGUIENTE ETAPA</span><h2>Preparando tu futura guía</h2>
-          <p>Conocemos tus {pending.length} logros pendientes. El primer prototipo de rutas verificadas ya está disponible para Watch Dogs 2. Los demás juegos seguirán incorporándose después de revisar sus requisitos, no solo por sus descripciones en Steam.</p>
-        </div>{game.id===447040?<Link className="guide-foundation-link" href="/guias/447040"><BookOpenCheck size={17}/> Abrir guía personalizada <ArrowUpRight size={16}/></Link>:<span className="guide-foundation-status">GUÍA EN PREPARACIÓN PARA ESTE JUEGO</span>}
+        <div><span className="eyebrow">04 / TU GUÍA PERSONALIZADA</span><h2>Tu ruta al 100 %</h2>
+          <p>Conocemos tus {pending.length} logros pendientes. Genera una ruta inicial basada en Steam, organiza fases, revisa requisitos y adapta la estrategia a tu partida. Las condiciones sin verificar se indicarán claramente.</p>
+        </div><Link className="guide-foundation-link" href={"/guias/"+game.id}><BookOpenCheck size={17}/> {game.id===447040?"Abrir guía revisada":"Generar mi guía"} <ArrowUpRight size={16}/></Link>
       </section>}
     </section>
     <footer className="game-detail-footer"><Link href="/?seccion=museo"><Trophy size={16}/> Visitar el museo</Link><span>PLATINUM VAULT · ARCHIVO PERSONAL</span></footer>
