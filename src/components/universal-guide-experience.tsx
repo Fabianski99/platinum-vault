@@ -2,12 +2,11 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { motion } from "motion/react";
 import {
-  ArrowDown, ArrowLeft, ArrowRight, ArrowUp, BookOpen, Check, ChevronDown,
-  CircleAlert, CircleCheck, ClipboardCheck, Download, ExternalLink, Flag, Gamepad2,
+  ArrowDown, ArrowLeft, ArrowRight, ArrowUp, BookOpen, Check,
+  CircleAlert, CircleCheck, Download, ExternalLink, Flag, Gamepad2,
   ListFilter, LoaderCircle, Pencil, RefreshCcw, Save, Search, ShieldAlert,
-  SlidersHorizontal, Sparkles, Target, Trophy, X,
+  SlidersHorizontal, Sparkles, Trophy, X,
 } from "lucide-react";
 import { GameArtwork } from "@/components/game-artwork";
 import type { GameAchievementData, AchievementDetail } from "@/lib/achievement";
@@ -228,7 +227,7 @@ export function UniversalGuideExperience({appId,name,iconHash,steamId,connected}
                   </div>
                   {id==="online"&&prefs.online==="al-final"&&<p className="ug-stage-hint">Prefieres los logros online al final. Puedes mover esta fase cuando quieras.</p>}
                   {id==="dlc"&&prefs.dlc==="no"&&<p className="ug-stage-hint">Contenido no disponible según tus preferencias. Comprueba si es obligatorio para llegar al 100 %.</p>}
-                  {visible.map(({detail,stage,evidence,flags,priority,notes,source,tip})=><article className={"ug-achievement "+(detail.unlocked?"obtained":"")} key={detail.apiName}>
+                  {visible.map(({detail,evidence,flags,priority,notes,source,tip})=><article className={"ug-achievement "+(detail.unlocked?"obtained":"")} key={detail.apiName}>
                     <div className="ug-achievement-icon">
                       {detail.unlocked?<CircleCheck size={19}/>:flags.missable==="yes"?<CircleAlert size={19}/>:<Trophy size={19}/>}
                     </div>
