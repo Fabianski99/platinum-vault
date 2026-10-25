@@ -15,6 +15,7 @@ export type GuidePreferences = {
   newGamePlus: "si" | "no" | "desconocido";
   difficulty: "sin-decidir" | "normal" | "maxima";
   stageOrder: GuideStageId[];
+  orderCustomized: boolean;
   showUnlocked: boolean;
   revealHidden: boolean;
   overrides: Record<string, GuideOverride>;
@@ -62,7 +63,7 @@ export const FLAG_IDS: GuideFlagId[] = ["missable","difficulty","newGamePlus","m
 export function defaultGuidePreferences(): GuidePreferences {
   return {
     version: 1, story:"en-curso", online:"al-final", dlc:"desconocido", newGamePlus:"desconocido",
-    difficulty:"sin-decidir", stageOrder:[...DEFAULT_STAGE_ORDER], showUnlocked:false,
+    difficulty:"sin-decidir", stageOrder:[...DEFAULT_STAGE_ORDER], orderCustomized:false, showUnlocked:false,
     revealHidden:false, overrides:{}, checks:{},
   };
 }
@@ -103,7 +104,7 @@ export function normalizedPreferences(raw: unknown): GuidePreferences {
     dlc:data.dlc==="si"||data.dlc==="no"?data.dlc:"desconocido",
     newGamePlus:data.newGamePlus==="si"||data.newGamePlus==="no"?data.newGamePlus:"desconocido",
     difficulty:data.difficulty==="normal"||data.difficulty==="maxima"?data.difficulty:"sin-decidir",
-    stageOrder:unique, showUnlocked:data.showUnlocked===true, revealHidden:data.revealHidden===true,
+    stageOrder:unique, orderCustomized:data.orderCustomized===true, showUnlocked:data.showUnlocked===true, revealHidden:data.revealHidden===true,
     overrides,
     checks:data.checks && typeof data.checks==="object"
       ? Object.fromEntries(Object.entries(data.checks).slice(0,1000).filter(([,v])=>typeof v==="boolean")) : {},
@@ -159,11 +160,15 @@ export function guideForAchievement(appId:number, entry:AchievementDetail, prefs
 
 export function orderedStages(prefs:GuidePreferences):GuideStageId[]{
   const stages=[...prefs.stageOrder];
-  // Las preferencias iniciales orientan una ruta nueva; el usuario puede reorganizarla libremente.
-  if(prefs.online==="primero"){
-    return ["online",...stages.filter(id=>id!=="online")];
-  }
-  return stages;
+  // La elección manual siempre tiene prioridad frente a las sugerencias automáticas.
+  if(prefs.orderCustomized)return stages;
+  const storyOrder=prefs.story==="terminada"
+    ? [...stages.filter(id=>id!=="historia")] : stages;
+  if(prefs.story==="terminada")storyOrder.splice(
+    Math.min(2,storyOrder.length),0,"historia",
+  );
+  if(prefs.online==="primero")return ["online",...storyOrder.filter(id=>id!=="online")];
+  return storyOrder;
 }
 export function steamGuideLinks(appId:number){
   return [
