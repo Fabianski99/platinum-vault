@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import type { ChangeEvent } from "react";
 import Link from "next/link";
 import {
   ArrowDown, ArrowLeft, ArrowRight, ArrowUp, BookOpen, Check,
@@ -65,6 +66,7 @@ export function UniversalGuideExperience({appId,name,iconHash,steamId,connected}
   const [editor,setEditor]=useState<string|null>(null);
   const [onlyUnknown,setOnlyUnknown]=useState(false);
   const [importMessage,setImportMessage]=useState("");
+  const [context,setContext]=useState<{available:boolean;dlcIds:number[];categories:string[]}|null>(null);
   const isCurated=appId===GUIDE_APP_ID;
 
   useEffect(()=>{
@@ -116,6 +118,16 @@ export function UniversalGuideExperience({appId,name,iconHash,steamId,connected}
     return ()=>controller.abort();
   },[appId,connected,revision]);
 
+  useEffect(()=>{
+    if(!connected)return;
+    const controller=new AbortController();
+    fetch("/api/steam/guide-context/"+appId,{signal:controller.signal})
+      .then(res=>res.ok?res.json():null)
+      .then(value=>{if(!controller.signal.aborted&&value)setContext(value);})
+      .catch(()=>{});
+    return ()=>controller.abort();
+  },[connected,appId]);
+
   const list=data?.achievements??EMPTY_ACHIEVEMENTS;
   const classified=useMemo(()=>list.map((item)=>guideForAchievement(appId,item,prefs)),[appId,list,prefs]);
   const missing=classified.filter((item)=>!item.detail.unlocked).length;
@@ -163,7 +175,7 @@ export function UniversalGuideExperience({appId,name,iconHash,steamId,connected}
     a.href=url;a.download="platinum-vault-guia-"+appId+".json";document.body.appendChild(a);a.click();
     a.remove();window.setTimeout(()=>URL.revokeObjectURL(url),1000);
   };
-  const importGuide=async(event:React.ChangeEvent<HTMLInputElement>)=>{
+  const importGuide=async(event:ChangeEvent<HTMLInputElement>)=>{
     const file=event.target.files?.[0];
     event.target.value="";
     if(!file)return;
@@ -301,7 +313,13 @@ export function UniversalGuideExperience({appId,name,iconHash,steamId,connected}
           </section>
           <section className="ug-research">
             <div><span className="ug-kicker"><BookOpen size={15}/> INVESTIGACIÓN ASISTIDA</span><h2>Fuentes para verificar la guía</h2>
-              <p>La página prepara búsquedas y fuentes para este juego automáticamente. Actualmente <strong>no realiza una investigación web ni genera texto con IA</strong>; las etiquetas sin comprobar seguirán siendo sugerencias hasta que añadas una referencia o las revises. No necesitas claves de IA para usar esta versión.</p>
+              <p>Steam aporta logros, rareza y metadatos de la tienda, cuando están disponibles. Los enlaces te permiten contrastar requisitos. Actualmente <strong>no se analizan guías externas automáticamente ni se genera texto con IA</strong>; las etiquetas sin comprobar seguirán siendo sugerencias hasta que las revises.</p>
+              {context?.available&&<div className="ug-store-context"><strong>Información detectada en la tienda</strong>
+                <p>{context.dlcIds.length?context.dlcIds.length+" DLC asociados al juego en Steam (se muestran hasta 24)": "Steam no devuelve DLC asociados en esta consulta."}</p>
+                {context.categories.length>0&&<p>Categorías: {context.categories.join(" · ")}</p>}
+                <small>La existencia de DLC no demuestra que un logro concreto dependa de ellos.</small>
+                {context.dlcIds.length>0&&<div className="ug-store-dlc">{context.dlcIds.map(id=><a key={id} href={"https://store.steampowered.com/app/"+id+"/"} target="_blank" rel="noopener noreferrer">DLC {id} <ExternalLink size={12}/></a>)}</div>}
+              </div>}
             </div>
             <div className="ug-research-links">{steamGuideLinks(appId).map(link=><a key={link.url} href={link.url} target="_blank" rel="noopener noreferrer">{link.label} <ExternalLink size={15}/></a>)}
               {isCurated&&GUIDE_SOURCES.filter(source=>!source.url.includes("/stats/")).map(source=><a key={source.url} href={source.url} target="_blank" rel="noopener noreferrer">{source.title} <ExternalLink size={15}/></a>)}
