@@ -57,7 +57,7 @@ function FlagEditor({value,onChange}:{value:GuideFlag;onChange:(next:GuideFlag)=
 export function UniversalGuideExperience({appId,name,iconHash,steamId,connected}:Props){
   const storageKey=GUIDE_STORAGE+steamId+":"+appId;
   const [prefs,setPrefs]=useState<GuidePreferences>(defaultGuidePreferences);
-  const [hydrated,setHydrated]=useState(false);
+  const [loadedKey,setLoadedKey]=useState("");
   const [data,setData]=useState<GameAchievementData|null>(null);
   const [loading,setLoading]=useState(connected);
   const [error,setError]=useState("");
@@ -91,13 +91,13 @@ export function UniversalGuideExperience({appId,name,iconHash,steamId,connected}
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setPrefs(normalizedPreferences(stored));
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    setHydrated(true);
+    setLoadedKey(storageKey);
   },[storageKey,steamId,appId]);
 
   useEffect(()=>{
-    if(!hydrated)return;
+    if(loadedKey!==storageKey)return;
     try{localStorage.setItem(storageKey,JSON.stringify(prefs));}catch{}
-  },[storageKey,prefs,hydrated]);
+  },[storageKey,prefs,loadedKey]);
 
   useEffect(()=>{
     if(!connected)return;
